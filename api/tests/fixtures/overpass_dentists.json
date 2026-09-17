@@ -1,0 +1,8 @@
+{"version": 0.6, "elements": [
+  {"type": "node", "id": 101, "lat": 30.40, "lon": -97.70,
+   "tags": {"amenity": "dentist", "name": "KC Dental", "website": "https://www.kcdentalaustin.com/",
+            "phone": "+1-512-918-0888", "addr:street": "West Parmer Lane", "addr:city": "Austin"}},
+  {"type": "way", "id": 202, "center": {"lat": 30.30, "lon": -97.75},
+   "tags": {"amenity": "dentist", "name": "Castle Dental"}},
+  {"type": "node", "id": 303, "lat": 30.31, "lon": -97.76, "tags": {"amenity": "dentist"}}
+]}
