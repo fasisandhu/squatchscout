@@ -1,7 +1,8 @@
 from functools import lru_cache
+from typing import Annotated
 
 from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -9,13 +10,15 @@ class Settings(BaseSettings):
 
     database_url: str = "sqlite:///./dev.db"
     groq_api_key: str | None = None
-    groq_models: list[str] = Field(default=["openai/gpt-oss-20b", "qwen/qwen3.8-27b"])
+    groq_models: Annotated[list[str], NoDecode] = Field(
+        default=["openai/gpt-oss-20b", "qwen/qwen3.8-27b"]
+    )
     llm_daily_soft_cap: int = 600
-    frontend_origins: list[str] = Field(default=["http://localhost:5173"])
+    frontend_origins: Annotated[list[str], NoDecode] = Field(default=["http://localhost:5173"])
     crawler_user_agent: str = "SquatchScoutBot/0.1 (+{public_url}/about)"
     crawler_contact: str | None = None
     public_url: str = "http://localhost:5173"
-    overpass_endpoints: list[str] = Field(
+    overpass_endpoints: Annotated[list[str], NoDecode] = Field(
         default=[
             "https://overpass-api.de/api/interpreter",
             "https://overpass.kumi.systems/api/interpreter",
