@@ -107,6 +107,8 @@ Each stage is a module under `api/app/pipeline/` with a pure-ish async function,
 - `founded_year`: patterns `(est\.?|established|since|founded|serving .{0,40} since)\s*(19|20)\d{2}`; sanity 1850..current year.
 - `family_owned`: `family[- ]owned|owner[- ]operated|locally owned`.
 - `owner_name`: `owner[,:]?\s+(Dr\.?\s+)?[A-Z][a-z]+ [A-Z][a-z]+` and `Dr\. [A-Z][a-z]+ [A-Z][a-z]+, (owner|founder)`.
+- `owner_operated`: derived — `True` when `family_owned` matched or `owner_name` was found; otherwise unknown (`None`), which is what makes the LLM gate below meaningful.
+- `is_chain`: derived from dedupe's `is_chain_suspected` (`True`) or a `brand` tag; otherwise unknown.
 - `hiring`: `we'?re hiring|careers|join our team|now hiring`.
 - `site_builder`: `<meta name="generator" content="WordPress|Wix|Squarespace|Weebly|GoDaddy|Duda">`, plus host/script hints (`wixstatic`, `squarespace.com`, `godaddysites`).
 - `has_booking`: `book (an|your) appointment|schedule online|zocdoc|calendly|acuity|localmed|housecall pro|jobber`.
@@ -141,7 +143,7 @@ Score 0–100 from five factors. Each factor returns `(points, max_points, reaso
 | **Reachability** | 25 | verified email +12 (unverified +6) · valid phone +8 · contact page found +3 · site reachable +2 |
 | **Establishment** | 20 | founded ≥10 yrs +8 (≥5 +5, known <5 +2) · OSM completeness up to +7 (full address +3, opening_hours +2, phone or website in OSM +2) · site reachable +5 |
 | **Digital-maturity gap** (AI upside; more gap → more points) | 20 | no website at all +20 · else DIY builder +7 · no online booking +5 · no chat widget +3 · copyright year ≥2 yrs stale +5 |
-| **Buy-box fit** | 20 | independent (not chain-suspected) +12 · physical address present +4 · primary tag matches searched industry +4 |
+| **Buy-box fit** | 20 | independent (not chain-suspected) +12 · physical address present +4 · real business name +4 (name is not just the category word — OSM has many POIs literally named "Dentist" or "Dental Clinic"; detected by comparing the normalized name against the industry's label/synonym list) |
 | **Succession signals** | 15 | founded ≥20 yrs +8 (≥15 +5) · owner name found +4 · family-owned/owner-operated phrase +3 |
 
 Tiers: **A ≥ 70 · B ≥ 55 · C ≥ 40 · D < 40**.
@@ -206,7 +208,7 @@ Base path `/api`. JSON errors `{ "error": { "code", "message" } }`; all handlers
 | `POST /api/intent` | `{ text }` → intent schema (§7.2) or 503 `llm_disabled` |
 | `POST /api/searches` | `{ industry_key, location, limit≤100, weight_preset?, nl_query? }` → `{ id }` and starts the pipeline |
 | `GET /api/searches/{id}/stream` | SSE. Events: `status {stage, message, count}` · `lead {…full lead}` · `lead_updated {lead_id, signals, factor_scores, score, tier, llm_status}` · `done {lead_count, llm_pending}` · `error {message}` |
-| `GET /api/searches/{id}` | search row |
+| `GET /api/searches/{id}` | search row incl. `status`, `lead_count`, `llm_pending` (leads still queued for LLM extraction) |
 | `GET /api/searches/{id}/leads` | all leads with contacts, signals, factor_scores |
 | `GET /api/leads/{id}` | one lead, full |
 | `POST /api/leads/{id}/opener` | `{ opener: string }` or 503 `llm_disabled` |
@@ -227,7 +229,9 @@ Lead payload shape (TS type hand-mirrored from the Pydantic schema and covered b
 
 **Components:** `SearchBar` (NL input with sparkle affordance when LLM enabled; manual `IndustrySelect`, `LocationInput`, `LimitInput`; primary **Scout** button) · `StatusStrip` · `ResultsTable` (name, city, `ScoreChip` with tier color, verified-email badge, phone, chain/independent tag, LLM "refined" dot; sortable; row checkboxes) · `LeadDrawer` (`FactorBars`, `ContactsList`, `SignalsList` with source pills, `OpenerPanel`) · `WeightsPanel` (5 sliders + preset chips + reset) · `SummaryTiles` (leads found, % with verified email, tier distribution mini-bar, LLM refined count) · `ExportMenu` · `EmptyState` (explains the flow, offers two example queries) · `ErrorToast` · `AttributionFooter` (© OpenStreetMap contributors).
 
-**State:** `useReducer` for the search session — `leads: Record<id, Lead>`, `order`, `status`, `weights`, `selected`. SSE handlers dispatch `lead_received`, `lead_updated`, `status`, `done`, `error`. Re-rank is a memoized selector using `rank.ts`.
+**State:** `useReducer` for the search session — `leads: Record<id, Lead>`, `order`, `status`, `weights`, `selected`, `llmPending`. SSE handlers dispatch `lead_received`, `lead_updated`, `status`, `done`, `error`. Re-rank is a memoized selector using `rank.ts`.
+
+**Late LLM updates:** when `done` arrives with `llm_pending > 0`, the client polls `GET /api/searches/{id}` every 10 s; whenever `llm_pending` drops, it fetches `GET /api/searches/{id}/leads` and dispatches `lead_updated` for changed rows. Polling stops when `llm_pending` reaches 0 or after 8 minutes (the per-search cap of 40 calls at ~6/min bounds the queue at ~7 min). The status strip shows "Refining N leads with AI…" during this phase.
 
 **Config:** `src/config.ts` reads `VITE_API_URL`; falls back to same-origin `/api` so the app never throws at import.
 
