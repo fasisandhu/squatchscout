@@ -17,7 +17,8 @@ MAX_BYTES = 1_000_000
 MAX_TEXT = 20_000
 MAX_PAGES = 3
 SECONDARY_PATHS = ("/contact", "/contact-us", "/about", "/about-us")
-STRIP_TAGS = ("script", "style", "nav", "header", "footer", "noscript", "svg", "iframe", "form")
+# footers stay: they carry © years, addresses and "family owned since" lines (spec §5.5)
+STRIP_TAGS = ("script", "style", "nav", "header", "noscript", "svg", "iframe", "form")
 BANNER_HINT = re.compile(r"cookie|consent|gdpr|banner|popup|modal", re.I)
 
 
