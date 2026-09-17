@@ -45,7 +45,7 @@ Job description signals the tool should also demonstrate: FastAPI + React, delib
    ├─ LLM client: Groq (OpenAI-compatible), model pool + token-bucket throttle
    └─ SQLModel/SQLAlchemy + Alembic
    ▼
- Postgres 16 (Docker volume, nightly pg_dump)
+ Postgres 16 (Docker volume)
 
  External: Nominatim (geocode) · Overpass API ×2 mirrors (discover) · business websites (enrich) · DNS MX (verify) · Groq (extract, intent, opener)
 ```
@@ -96,7 +96,8 @@ Each stage is a module under `api/app/pipeline/` with a pure-ish async function,
 - Runs only for leads with a website. Async `httpx` client, global concurrency 8, **1 in-flight request per domain**, 6 s timeout, 1 MB body cap, HTML only, 2 retries on network errors only.
 - Robots: fetch `/robots.txt` once per domain (cached), parse with `urllib.robotparser`, obey for our UA. Disallowed → mark `enrichment_status=blocked_by_robots`, skip politely.
 - Pages: homepage, then up to two of `/contact`, `/contact-us`, `/about`, `/about-us` if linked from the homepage. Max 3 pages per domain.
-- Output `PageBundle(domain, pages: list[PageText], fetched_at)` where `PageText` holds `url`, `title`, `meta_description`, `visible_text` (selectolax, scripts/styles removed), `raw_head` (for generator/builder detection), `links`.
+- Text cleaning (deterministic, before any extraction): drop `script`, `style`, `nav`, `header`, `footer`, `noscript`, `svg`, and elements whose class/id hints at cookie/consent banners; collapse whitespace; de-duplicate repeated lines (menus repeat on every page); cap `visible_text` at 20 k chars. Pages that are JS-rendered stubs or scrambled yield little text — recorded as `text_quality ∈ {good, thin, empty}`, one of the triggers for the LLM pass.
+- Output `PageBundle(domain, pages: list[PageText], fetched_at)` where `PageText` holds `url`, `title`, `meta_description`, `visible_text` (cleaned as above), `text_quality`, `raw_head` (for generator/builder detection), `links`.
 - Cached 7 days in `enrichment_cache` by domain (stores the extracted text excerpt and the regex/LLM signals and contacts, not full HTML).
 
 ### 5.5 Extract — `extract_regex.py`, `extract_llm.py`
@@ -115,8 +116,12 @@ Each stage is a module under `api/app/pipeline/` with a pure-ish async function,
 - `has_chat`: `intercom|drift|tawk|livechat|podium|birdeye`.
 - `copyright_year`: last `©|copyright\s*(19|20)\d{2}` on the page.
 - `contact_page_found`: any fetched contact/about page returned 200.
+- `street_address` (gap-fill — OSM frequently lacks it): simple US/CA pattern `\d{1,6}\s+[A-Za-z0-9.' ]{2,40}\s+(St|Street|Ave|Avenue|Blvd|Rd|Road|Dr|Drive|Ln|Lane|Way|Pkwy|Hwy|Ct|Pl)\b`, preferred when a postcode appears within 60 chars. Used only when OSM has no street.
+- `display_name` (deterministic): OSM `name` → collapse whitespace, title-case if ALL CAPS, normalize legal suffixes (`Llc`→`LLC`, `Dds`→`DDS`), strip trailing location suffixes like ` - Dentist in Austin`.
 
-**LLM pass (gap-filling, env-gated, see §7):** runs only if a website was fetched **and** any of `founded_year`, `owner_operated`, `owner_name`, `is_chain` is still unknown after regex. Input: title + meta + up to ~700 tokens of the most relevant sentences (those containing `since|founded|est|family|owner|our team|about|locations`), then the first paragraph as filler. Output schema in §7.2.
+**Structured fields are never reformatted by the LLM.** Phones go through `phonenumbers`, emails through the validator, URLs through the domain normalizer. Deterministic libraries are more reliable and verifiable than a model for these, and a transposed digit is worse than a missing number.
+
+**LLM pass (interpretation + gap-filling, env-gated, see §7):** this is the mechanism for scraped text that is messy, scrambled, or unstructured — the model reads the cleaned page text and returns clean typed fields. Runs only if a website was fetched **and** (a) any of `founded_year`, `owner_operated`, `owner_name`, `is_chain` is still unknown after regex, or (b) OSM and regex both lack a street address, or (c) `text_quality == thin`. Input: title + meta + up to ~700 tokens of the most relevant sentences (those containing `since|founded|est|family|owner|our team|about|locations|address|located`), then the first paragraph as filler. Output schema and validation in §7.2.
 
 **Merge policy:** regex value wins where present; LLM fills blanks; LLM may override a regex value only when `confidence ≥ 0.85` and the values conflict. Every value is stored as a `signals` row with `source ∈ {osm, regex, llm}` and `confidence`, so the UI can show provenance and the eval can compare.
 
@@ -126,7 +131,33 @@ Each stage is a module under `api/app/pipeline/` with a pure-ish async function,
 - Website: `reachable` if any page returned 2xx/3xx.
 
 ### 5.7 Score — `score.py`
-See §6. Pure function over a `LeadFacts` object; deterministic; unit-tested against golden cases.
+`score(facts: LeadFacts, reference_year: int) -> list[FactorScore]` is a **pure function**: no DB, no I/O, no clock (the year is injected so tests are stable). `LeadFacts` is a flat Pydantic model assembled by the runner from the lead row, its contacts, and its signals — the *only* thing the scorer sees, which is what makes the golden tests trivial (`LeadFacts → factor points`) and lets the TypeScript re-ranker share the same fixtures.
+
+```
+LeadFacts
+  industry_key: str
+  has_website: bool
+  site_reachable: bool
+  contact_page_found: bool
+  best_email_status: verified | unverified | invalid | none
+  best_phone_status: valid | possible | invalid | none
+  founded_year: int | None
+  owner_name_found: bool
+  owner_operated: bool | None
+  family_owned: bool
+  is_chain_suspected: bool
+  has_physical_address: bool          # street + city known (any source)
+  osm_full_address: bool              # housenumber + street + city + postcode all in OSM
+  osm_opening_hours: bool
+  osm_has_contact: bool               # phone or website tag present in OSM
+  site_builder: str | None            # e.g. "wix", "squarespace", "wordpress"
+  has_booking: bool
+  has_chat: bool
+  copyright_year: int | None
+  generic_name: bool                  # name is just the category word
+```
+
+`FactorScore = { factor, points, max_points, reasons: list[str] }`. Points tables in §6.
 
 ### 5.8 Persist and stream — `runner.py`
 - Fast path per lead: dedupe → enrich → regex extract → verify → score → write → emit `lead`.
@@ -165,7 +196,7 @@ Weight presets (selectable in UI; the NL intent parser may choose one) as R/E/D/
 
 ### 7.2 Three uses, each with a non-AI fallback
 1. **Search intent** — one call per NL search (~300 tokens). Strict schema: `{ industry_key: enum|null, location: string|null, limit: int|null, weight_preset: enum, rationale: string }`. Result fills the form; user can edit before running. Fallback: manual form.
-2. **Signal extraction** — strict schema: `{ founded_year: int|null, owner_operated: bool|null, owner_name: string|null, family_owned: bool|null, is_chain: bool|null, hiring: bool|null, services: string[], confidence: number }`. Gap-filling only (§5.5). Fallback: regex-only signals.
+2. **Signal extraction and interpretation** — strict schema: `{ display_name: string|null, founded_year: int|null, owner_operated: bool|null, owner_name: string|null, family_owned: bool|null, is_chain: bool|null, hiring: bool|null, services: string[], address: { street: string|null, city: string|null, state: string|null, postcode: string|null }, confidence: number }`. Gap-filling only (§5.5). **Every LLM output is validated before it is stored** (Pydantic validators, field-by-field — a bad field is dropped, never the whole response): `founded_year` within 1850..current year; `owner_name` must literally occur in the source text (grounding check — hallucinated names are discarded); `display_name` must share ≥ 60 % of tokens with the OSM name; `address.postcode` must match the country's format; `services` capped at 8 items of ≤ 40 chars. Phones and emails are deliberately absent from the schema (§5.5). Fallback: regex-only signals.
 3. **Call opener** — on demand from the drawer; 3 lines, grounded strictly in stored signals (prompt forbids inventing facts). Fallback: button hidden.
 
 ### 7.3 Throttle, fallback, budget
@@ -185,7 +216,7 @@ Documented in README: deterministic factor reasons are auditable and stable; an 
 SQLModel models, Alembic migrations from the first commit. Postgres 16 in prod; SQLite for local dev and tests (JSON columns via SQLAlchemy `JSON`, which maps to `JSONB` on Postgres via a variant).
 
 - **searches** — `id (uuid pk)`, `industry_key`, `location_query`, `geocoded_name`, `country_code`, `bbox_s/w/n/e`, `limit`, `nl_query (nullable)`, `weight_preset`, `status`, `lead_count`, `created_at`, `finished_at`.
-- **leads** — `id (uuid pk)`, `search_id (fk, idx)`, `osm_type`, `osm_id`, `name`, `normalized_name`, `lat`, `lon`, `street`, `housenumber`, `city`, `state`, `postcode`, `country`, `website`, `normalized_domain (idx)`, `osm_tags (json)`, `is_chain_suspected`, `enrichment_status`, `llm_status`, `score`, `tier`, `created_at`, `updated_at`. Unique `(search_id, osm_type, osm_id)`.
+- **leads** — `id (uuid pk)`, `search_id (fk, idx)`, `osm_type`, `osm_id`, `name`, `display_name`, `normalized_name`, `lat`, `lon`, `street`, `housenumber`, `city`, `state`, `postcode`, `country`, `address_source ∈ {osm, regex, llm, none}`, `website`, `normalized_domain (idx)`, `osm_tags (json)`, `is_chain_suspected`, `enrichment_status`, `llm_status`, `score`, `tier`, `created_at`, `updated_at`. Unique `(search_id, osm_type, osm_id)`.
 - **contacts** — `id`, `lead_id (fk, idx)`, `kind ∈ {email, phone, social}`, `value`, `normalized_value`, `source ∈ {osm, website, llm}`, `verification_status`, `meta (json)`.
 - **signals** — `id`, `lead_id (fk, idx)`, `key`, `value (text)`, `source ∈ {osm, regex, llm}`, `confidence (float)`, `created_at`. Index `(lead_id, key)`.
 - **factor_scores** — `id`, `lead_id (fk, idx)`, `factor`, `points`, `max_points`, `reasons (json array)`. Unique `(lead_id, factor)`.
@@ -193,7 +224,7 @@ SQLModel models, Alembic migrations from the first commit. Postgres 16 in prod; 
 - **overpass_cache** — `key (pk)`, `payload (json)`, `created_at`, `expires_at (idx)`.
 - **enrichment_cache** — `domain (pk)`, `text_excerpt`, `regex_signals (json)`, `llm_signals (json)`, `contacts (json)`, `robots_blocked (bool)`, `fetched_at`, `expires_at (idx)`.
 
-Retention: searches and children older than 30 days are deleted by `api/scripts/purge_old.py`, run from host cron (documented in runbook). Caches expire by `expires_at`.
+Retention: an in-app housekeeping task (`services/housekeeping.py`, run at startup and every 24 h via `asyncio`) deletes searches and their children older than `PURGE_AFTER_DAYS` and rows past `expires_at` in the caches. No host cron.
 
 Migrations run at container start: `alembic upgrade head && uvicorn …` (single instance, acceptable).
 
@@ -256,6 +287,8 @@ Lead payload shape (TS type hand-mirrored from the Pydantic schema and covered b
 | `OVERPASS_ENDPOINTS` | two mirrors | comma-separated |
 | `NOMINATIM_ENDPOINT` | `https://nominatim.openstreetmap.org` | |
 | `MAX_LEADS_PER_SEARCH` | `60` | hard max 100 |
+| `PURGE_AFTER_DAYS` | `30` | in-app daily purge of old searches + expired caches |
+| `API_HOST` | unset | public hostname for Caddy TLS and deploy health check |
 | `ENRICH_CACHE_TTL_DAYS` / `OVERPASS_CACHE_TTL_HOURS` | `7` / `24` | |
 | `LOG_LEVEL` | `INFO` | JSON logs |
 
@@ -263,32 +296,33 @@ Lead payload shape (TS type hand-mirrored from the Pydantic schema and covered b
 
 ## 12. Hosting and deployment
 
+Sized to what evaluators will actually see: a working live demo, the README's hosting/deploy paragraphs, the `deploy/` folder, and one workflow file. Every file here is short enough to read in a minute.
+
 ### 12.1 Server
-- **AWS EC2 t3.micro, Ubuntu 24.04 LTS**, region us-east-1 (or nearest). Security group: 22 from owner IP only, 80/443 from anywhere. 1 GB swap file added by setup script.
-- `deploy/setup-ubuntu.sh` (idempotent): apt update/upgrade, install Docker Engine + Compose plugin from Docker's apt repo, `ufw` (22/80/443), create `/opt/squatchscout`, copy compose files, install and enable the systemd unit, install cron entries (backup, purge).
-- Hostname for TLS: owner's domain if available, else `api.<ip>.sslip.io` (Let's Encrypt works with sslip.io). Set in `Caddyfile` via `${API_HOST}`.
+- **AWS EC2 t3.micro, Ubuntu 24.04 LTS.** Security group: 22 from owner IP, 80/443 from anywhere. That is the whole firewall — no `ufw`, no systemd unit (Docker's `restart: unless-stopped` already brings containers back after a reboot).
+- `deploy/setup-ubuntu.sh` (run once, idempotent): install Docker Engine + Compose plugin; add a 1 GB swap file (a 1 GB instance can OOM while building the image); `git clone` the repo to `/opt/squatchscout`; copy `deploy/.env.example` → `.env` for the owner to fill; `docker compose up -d --build`.
+- **TLS is required, not optional:** Vercel serves the UI over HTTPS, and browsers block an HTTPS page from calling an HTTP API (mixed content). Caddy handles it with zero configuration — the `Caddyfile` is two lines (`{$API_HOST} { reverse_proxy api:8000 }`) and it obtains and renews the certificate itself for whatever hostname points at the box. Hostname: the owner's domain if available, otherwise a free `api.<ip>.sslip.io` name. Nothing else to set up.
 
 ### 12.2 Containers — `deploy/docker-compose.yml`
-- `api`: image `ghcr.io/<owner>/squatchscout-api:${API_TAG}` (public package), `env_file: .env`, `depends_on: postgres (healthy)`, `restart: unless-stopped`, log driver `json-file` with `max-size 10m, max-file 3`. Command runs `alembic upgrade head` then uvicorn on `$PORT` (8000), 1 worker.
-- `postgres`: `postgres:16-alpine`, volume `pgdata`, healthcheck `pg_isready`.
-- `caddy`: `caddy:2`, ports 80/443, volumes `caddy_data`, `caddy_config`, `Caddyfile` mounted. `reverse_proxy api:8000` with `flush_interval -1` so SSE streams are not buffered.
-- `deploy/squatchscout.service`: `docker compose -f /opt/squatchscout/docker-compose.yml up -d` on boot, `Restart=on-failure`.
+- `api`: `build: ../api`, `env_file: .env`, `depends_on: postgres (healthy)`, `restart: unless-stopped`, log rotation (`json-file`, `max-size 10m`, `max-file 3`). Command: `alembic upgrade head && uvicorn … --port 8000`, 1 worker. `APP_VERSION` build arg = short git SHA, surfaced by `/healthz`.
+- `postgres`: `postgres:16-alpine`, volume `pgdata`, healthcheck `pg_isready`, `restart: unless-stopped`.
+- `caddy`: `caddy:2`, ports 80/443, volumes `caddy_data`, `caddy_config`, `Caddyfile` mounted, `flush_interval -1` on the proxy so SSE is not buffered.
 
 ### 12.3 CI/CD — `.github/workflows/`
 - `ci.yml` (PR + push): Python 3.13 — `ruff check`, `ruff format --check`, `pytest`; Node 24 — `pnpm install --frozen-lockfile`, `tsc --noEmit`, `vitest run`, `vite build`.
-- `deploy.yml` (push to `main`, after CI): build API image with `docker/build-push-action`, push to GHCR tagged `sha-<short>` and `latest` → SSH to VM (`appleboy/ssh-action`, key in GitHub secret) → run `/opt/squatchscout/deploy.sh sha-<short>`.
-- `deploy/deploy.sh <tag>`: save current `API_TAG` to `.previous_tag`, write new tag to `.env`, `docker compose pull api`, `docker compose up -d api`, poll `https://$API_HOST/healthz` up to 30× (2 s) → success; on failure restore `.previous_tag`, `up -d api`, exit 1 (workflow shows red).
+- `deploy.yml` (push to `main`, after CI passes): SSH to the VM (`appleboy/ssh-action`, private key in a GitHub secret) and run `/opt/squatchscout/deploy/deploy.sh <sha>`. No image registry — the box builds from source, the simplest honest setup for a single Ubuntu server.
+- `deploy/deploy.sh <sha>` (~20 lines): record the currently deployed SHA in `.deployed_sha`; `git fetch && git checkout <sha>`; `docker compose up -d --build api`; poll `https://$API_HOST/healthz` up to 30× (2 s). On failure: check out the previous SHA, rebuild, exit 1 so the workflow shows red. A manual rollback is the same script with an older SHA.
 
 ### 12.4 Frontend — Vercel
-- Project root `web/`, framework Vite, `VITE_API_URL=https://<API_HOST>` for production. `vercel.json` rewrites all routes to `/index.html`. Deployment Protection **off**. Auto-deploys from `main`.
+- Project root `web/`, framework Vite, `VITE_API_URL=https://<API_HOST>`. `vercel.json` rewrites all routes to `/index.html`. Deployment Protection **off**. Auto-deploys from `main`.
 
 ### 12.5 Wiring and verification
-- `FRONTEND_ORIGINS` = Vercel production URL (Starlette's CORS middleware takes explicit origins or a regex; use `allow_origin_regex` for `*.vercel.app` previews if needed).
+- `FRONTEND_ORIGINS` = Vercel production URL (Starlette's CORS middleware takes explicit origins, or `allow_origin_regex` for `*.vercel.app` previews).
 - Verify checklist: `curl /healthz`; CORS preflight returns `access-control-allow-origin`; a real search streams end-to-end in the browser; export downloads; `docker compose logs` clean.
 
-### 12.6 Backups and housekeeping (host cron)
-- `deploy/backup.sh`: `03:00` daily `pg_dump | gzip` → `/opt/squatchscout/backups/YYYY-MM-DD.sql.gz`, keep 7.
-- `api/scripts/purge_old.py` via `docker compose exec api`: `04:00` daily, deletes searches > 30 days and expired caches.
+### 12.6 Housekeeping
+- Purge of old searches and expired caches runs **inside the app** (§8) — no host cron.
+- `deploy/backup.sh` (nightly `pg_dump | gzip`, keep 7, one cron line) is an **ops extra** after the core, if time allows. It exists to give a concrete answer when the interviewer asks how a deployed service is maintained.
 
 ### 12.7 "Production would differ" paragraph (README)
 ECS Fargate or EKS behind an ALB, RDS Postgres with automated backups, ElastiCache for the throttle/caches, S3+CloudFront for the UI, Secrets Manager, CloudWatch — and a job queue (SQS/Celery) for the crawl/LLM stages instead of in-process tasks.
@@ -297,7 +331,7 @@ ECS Fargate or EKS behind an ALB, RDS Postgres with automated backups, ElastiCac
 
 - Structured JSON logs (stdlib `logging` with a JSON formatter): request id, search id, stage, duration, external call outcomes, LLM model/tokens/429s.
 - `/healthz` checks DB connectivity and reports `llm_enabled` and git SHA (baked at build via `APP_VERSION` arg).
-- `docs/runbook.md` covers: check service status · tail logs · restart api · deploy a specific tag · roll back · run/inspect migrations · restore a backup · rotate `GROQ_API_KEY` · disk-full triage · Ubuntu security updates · certificate notes (Caddy auto-renews) · known free-tier limits.
+- `docs/runbook.md` covers: check service status · tail logs · restart api · deploy or roll back to a specific commit · run/inspect migrations · restore a backup (if `backup.sh` is installed) · rotate `GROQ_API_KEY` · disk-full triage · Ubuntu security updates · certificate notes (Caddy auto-renews) · known free-tier limits.
 
 ## 14. Testing
 
@@ -335,13 +369,12 @@ squatchscout/
 │  │  ├─ routers/ health.py · industries.py · intent.py · searches.py · leads.py · export.py
 │  │  ├─ pipeline/ runner.py · geocode.py · industries.py · discover.py · dedupe.py · crawl.py · extract_regex.py · extract_llm.py · verify.py · score.py
 │  │  ├─ llm/ client.py · throttle.py · schemas.py · prompts.py
-│  │  └─ services/ cache.py · export.py · events.py
-│  ├─ scripts/ purge_old.py
+│  │  └─ services/ cache.py · export.py · events.py · housekeeping.py
 │  └─ tests/ (mirrors app/) + fixtures/
 ├─ web/
 │  ├─ package.json · vite.config.ts · tsconfig.json · index.html · vercel.json
 │  └─ src/ main.tsx · App.tsx · config.ts · api/{client,sse,types}.ts · lib/rank.ts · state/searchReducer.ts · components/… · styles/
-├─ deploy/ docker-compose.yml · Caddyfile · squatchscout.service · setup-ubuntu.sh · deploy.sh · backup.sh · .env.example
+├─ deploy/ docker-compose.yml · Caddyfile · setup-ubuntu.sh · deploy.sh · .env.example · (backup.sh — ops extra)
 ├─ evals/ golden/*.html · labels.json · extraction_eval.py · results.md
 ├─ notebooks/ demo.ipynb
 ├─ data/ sample-search-<city>-<industry>.csv
@@ -372,7 +405,8 @@ Every session is recorded in `docs/time-log.md` as it happens.
 | Overpass slow/down | two mirrors, retry/backoff, 24 h cache, friendly error |
 | OSM contact data sparse | design treats "no web presence" as a signal; enrichment adds contacts; README states coverage honestly |
 | Groq free-tier limits | throttle, model pool, gap-filling only, per-search and daily caps, cache; pre-warm before video |
-| t3.micro memory | single uvicorn worker, swap, alpine Postgres, log rotation |
+| t3.micro memory (incl. building the image on the box) | single uvicorn worker, 1 GB swap, alpine Postgres, log rotation |
+| LLM returns plausible-but-wrong values | field-level validation and grounding checks (§7.2); structured fields never come from the LLM |
 | Crawl blocked / slow sites | robots respected, 6 s timeout, marked not hidden |
 | Let's Encrypt issuance | Caddy handles; sslip.io fallback hostname |
 | Scope creep vs 5 h | spec non-goals; time log; plan tasks sized ≤ 30 min |
