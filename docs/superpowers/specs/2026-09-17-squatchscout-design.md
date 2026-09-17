@@ -254,7 +254,7 @@ Lead payload shape (TS type hand-mirrored from the Pydantic schema and covered b
 
 ## 10. Frontend
 
-**Stack:** Vite · React 19 · TypeScript · Tailwind CSS v4 · TanStack Table · TanStack Query (non-stream fetches) · native `EventSource` · lucide-react. No component library; a small set of hand-built primitives.
+**Stack:** Vite · React 19 · TypeScript · Tailwind CSS v4 · TanStack Table · native `fetch` + `EventSource` (only two one-off fetches exist — industries and health — so no query library) · lucide-react. No component library; a small set of hand-built primitives.
 
 **Layout (desktop ≥ 1024 px):** top search bar; main column = status strip + results table; right rail (320 px) = weights panel, summary tiles, export. **< 1024 px:** rail collapses into a bottom sheet; table becomes card list. Body never scrolls horizontally; the table scrolls inside its container.
 
