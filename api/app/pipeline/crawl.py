@@ -74,17 +74,28 @@ def quality(text: str) -> Literal["good", "thin", "empty"]:
     return "empty" if n < 80 else "thin" if n < 400 else "good"
 
 
-async def _get(client: httpx.AsyncClient, url: str) -> httpx.Response | None:
+async def _get(
+    client: httpx.AsyncClient, url: str
+) -> tuple[int, httpx.Headers, bytes, str | None] | None:
+    """Stream the response, capping the body at MAX_BYTES on the wire (not after decode)."""
     ua = get_settings().user_agent
     for attempt in range(3):
         try:
-            r = await client.get(
+            async with client.stream(
+                "GET",
                 url,
                 headers={"User-Agent": ua, "Accept": "text/html"},
                 timeout=TIMEOUT,
                 follow_redirects=True,
-            )
-            return r
+            ) as r:
+                chunks: list[bytes] = []
+                size = 0
+                async for chunk in r.aiter_bytes():
+                    chunks.append(chunk)
+                    size += len(chunk)
+                    if size >= MAX_BYTES:
+                        break
+                return r.status_code, r.headers, b"".join(chunks)[:MAX_BYTES], r.encoding
         except httpx.TransportError:
             if attempt == 2:
                 return None
@@ -93,22 +104,26 @@ async def _get(client: httpx.AsyncClient, url: str) -> httpx.Response | None:
 
 async def _allowed(client: httpx.AsyncClient, base: str) -> bool | None:
     """True/False from robots.txt; treated as allowed if robots.txt itself is unreachable."""
-    r = await _get(client, urljoin(base, "/robots.txt"))
-    if r is None or r.status_code >= 400:
+    result = await _get(client, urljoin(base, "/robots.txt"))
+    if result is None:
         return True
+    status, _headers, body, encoding = result
+    if status >= 400:
+        return True
+    text = body.decode(encoding or "utf-8", errors="replace")
     rp = robotparser.RobotFileParser()
-    rp.parse(r.text.splitlines())
+    rp.parse(text.splitlines())
     return rp.can_fetch(get_settings().user_agent.split("/")[0], base)
 
 
-def _page(url: str, r: httpx.Response) -> PageText | None:
-    ctype = r.headers.get("content-type", "")
-    if r.status_code >= 400 or (
-        "html" not in ctype and not r.text.lstrip().lower().startswith("<")
-    ):
+def _page(
+    url: str, status: int, headers: httpx.Headers, body: bytes, encoding: str | None
+) -> PageText | None:
+    ctype = headers.get("content-type", "")
+    text_body = body.decode(encoding or "utf-8", errors="replace")
+    if status >= 400 or ("html" not in ctype and not text_body.lstrip().lower().startswith("<")):
         return None
-    html = r.text[:MAX_BYTES]
-    title, meta, text, links, head = clean_html(html)
+    title, meta, text, links, head = clean_html(text_body)
     return PageText(
         url=url,
         title=title,
@@ -131,7 +146,7 @@ async def crawl_site(url: str, client: httpx.AsyncClient) -> CrawlResult:
     home = await _get(client, base)
     if home is None:
         return CrawlResult(status="unreachable")
-    first = _page(base, home)
+    first = _page(base, *home)
     if first is None:
         return CrawlResult(status="unreachable")
     pages = [first]
@@ -146,7 +161,7 @@ async def crawl_site(url: str, client: httpx.AsyncClient) -> CrawlResult:
             continue
         seen.add(u)
         r = await _get(client, u)
-        p = _page(u, r) if r is not None else None
+        p = _page(u, *r) if r is not None else None
         if p:
             pages.append(p)
     return CrawlResult(
