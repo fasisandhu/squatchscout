@@ -1,6 +1,6 @@
 import asyncio
 import hashlib
-from datetime import UTC, timedelta
+from datetime import timedelta
 
 import httpx
 from pydantic import BaseModel
@@ -90,14 +90,8 @@ async def fetch_places(
     settings = get_settings()
     key = cache_key(industry.key, box, limit)
     cached = session.get(OverpassCache, key)
-    if cached:
-        # SQLite's DateTime column drops tzinfo on read-back (the stored wall-clock
-        # value is still UTC, per utcnow()), so re-attach UTC before comparing.
-        expires_at = cached.expires_at
-        if expires_at.tzinfo is None:
-            expires_at = expires_at.replace(tzinfo=UTC)
-        if expires_at > utcnow():
-            return parse_elements(cached.payload)
+    if cached and cached.expires_at > utcnow():
+        return parse_elements(cached.payload)
     query = build_overpass_query(industry, box.s, box.w, box.n, box.e, limit)
     for url in settings.overpass_endpoints:
         payload = await _post_with_retry(client, url, query)

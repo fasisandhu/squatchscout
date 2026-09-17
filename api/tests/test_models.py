@@ -1,7 +1,9 @@
+from datetime import UTC, datetime, timedelta
+
 from sqlmodel import select
 
 from app.db import session_scope
-from app.models import Lead, Search, new_id
+from app.models import Lead, OverpassCache, Search, new_id, utcnow
 
 
 def test_search_and_lead_roundtrip(db):
@@ -27,3 +29,17 @@ def test_search_and_lead_roundtrip(db):
         assert got.osm_tags == {"amenity": "dentist"}
         assert got.score is None and got.tier is None
         assert got.address_source == "none"
+
+
+def test_utcnow_is_naive_utc():
+    assert utcnow().tzinfo is None
+    assert abs((utcnow() - datetime.now(UTC).replace(tzinfo=None)).total_seconds()) < 5
+
+
+def test_datetime_columns_round_trip_naive(db):
+    with session_scope() as s:
+        s.add(OverpassCache(key="k", payload={}, expires_at=utcnow() + timedelta(hours=1)))
+    with session_scope() as s:
+        row = s.get(OverpassCache, "k")
+        assert row.expires_at.tzinfo is None
+        assert (row.expires_at > utcnow()) is True

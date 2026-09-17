@@ -12,7 +12,9 @@ def new_id() -> str:
 
 
 def utcnow() -> datetime:
-    return datetime.now(UTC)
+    """Naive UTC. All stored datetimes are naive UTC by convention — SQLite and plain-timestamp
+    Postgres return naive values, so comparisons stay consistent across both backends."""
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 class Search(SQLModel, table=True):
