@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./dev.db"
     groq_api_key: str | None = None
     groq_models: Annotated[list[str], NoDecode] = Field(
-        default=["openai/gpt-oss-20b", "qwen/qwen3.8-27b"]
+        default=["qwen/qwen3.8-27b", "openai/gpt-oss-20b"]
     )
     llm_daily_soft_cap: int = 600
     frontend_origins: Annotated[list[str], NoDecode] = Field(default=["http://localhost:5173"])

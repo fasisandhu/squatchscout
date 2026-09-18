@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -7,12 +8,19 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app import deps
 from app.config import get_settings
+from app.logging_setup import configure_logging
 from app.routers import export, health, industries, intent, leads, searches
+from app.services.housekeeping import run_daily
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    configure_logging(get_settings().log_level)
+    stop = asyncio.Event()
+    task = asyncio.create_task(run_daily(stop))
     yield
+    stop.set()
+    task.cancel()
     await deps.shutdown()
 
 
