@@ -5,7 +5,7 @@ from datetime import UTC, datetime, timedelta
 
 import httpx
 from pydantic import BaseModel
-from sqlmodel import Session, delete, select
+from sqlmodel import Session, delete, select, update
 
 from app.config import get_settings
 from app.db import session_scope
@@ -51,6 +51,7 @@ class Enriched(BaseModel):
     regex: RegexSignals | None = None
     contacts: list[RawContact] = []
     bundle: PageBundle | None = None
+    llm: ExtractionResult | None = None
 
 
 class LLMJob(BaseModel):
@@ -115,11 +116,18 @@ async def _enrich(c: Candidate, client: httpx.AsyncClient, year: int, region: st
         if cached and cached.expires_at > utcnow():
             if cached.robots_blocked:
                 return Enriched(status="blocked_by_robots")
+            llm = None
+            if cached.llm_signals:
+                try:
+                    llm = ExtractionResult(**cached.llm_signals)
+                except (TypeError, ValueError):
+                    llm = None
             return Enriched(
                 status="ok",
                 regex=RegexSignals(**cached.regex_signals),
                 contacts=[RawContact(**x) for x in cached.contacts],
                 bundle=_synthetic_bundle(c.domain, cached.text_excerpt),
+                llm=llm,
             )
     url = c.place.tags.get("website") or c.place.tags.get("contact:website")
     res = await crawl_site(url, client)
@@ -135,11 +143,13 @@ async def _enrich(c: Candidate, client: httpx.AsyncClient, year: int, region: st
     regex = extract_signals(res.bundle, year)
     contacts = extract_contacts(res.bundle, region)
     with session_scope() as s:
+        existing = s.get(EnrichmentCache, c.domain)
         s.merge(
             EnrichmentCache(
                 domain=c.domain,
                 text_excerpt=build_llm_input(res.bundle),
                 regex_signals=regex.model_dump(),
+                llm_signals=existing.llm_signals if existing else {},
                 contacts=[x.model_dump() for x in contacts],
                 robots_blocked=False,
                 expires_at=utcnow() + ttl,
@@ -244,33 +254,44 @@ async def _process_candidate(
 ) -> LLMJob | None:
     lead = _lead_from_candidate(search, c)
     try:
-        async with sem, domain_locks[c.domain or lead.id]:
-            enriched = await _enrich(c, client, year, search.country_code or "US")
-    except Exception:  # noqa: BLE001 — one bad site must not sink the search
-        log.exception("enrich.failed", extra={"domain": c.domain})
-        enriched = Enriched(status="unreachable")
-    lead.enrichment_status = enriched.status
-    raw = [(x, "osm") for x in _osm_contacts(c)] + [(x, "website") for x in enriched.contacts]
-    contacts = await _verified_contacts(lead.id, raw, search.country_code or "US")
-    regex = enriched.regex or RegexSignals()
-    values = merge_signals(regex, None) if enriched.status == "ok" else []
-    job = None
-    if enriched.status == "ok" and enriched.bundle is not None:
-        if not pool.enabled:
-            lead.llm_status = "disabled"
-        elif needs_llm(regex, bool(lead.street), enriched.bundle.pages[0].text_quality):
-            lead.llm_status = "queued"
-            job = LLMJob(lead_id=lead.id, osm_name=lead.name, bundle=enriched.bundle, regex=regex)
-    with session_scope() as s:
-        s.add(lead)
-        for ct in contacts:
-            s.add(ct)
-        s.flush()
-        _apply_signals_and_score(s, lead, contacts, values, industry, weights, year)
-        s.flush()
-        out = lead_to_out(*_load_out(s, lead.id))
-    bus.publish(search.id, "lead", out.model_dump())
-    return job
+        try:
+            async with sem, domain_locks[c.domain or lead.id]:
+                enriched = await _enrich(c, client, year, search.country_code or "US")
+        except Exception:  # noqa: BLE001 — one bad site must not sink the search
+            log.exception("enrich.failed", extra={"domain": c.domain})
+            enriched = Enriched(status="unreachable")
+        lead.enrichment_status = enriched.status
+        raw = [(x, "osm") for x in _osm_contacts(c)] + [(x, "website") for x in enriched.contacts]
+        contacts = await _verified_contacts(lead.id, raw, search.country_code or "US")
+        regex = enriched.regex or RegexSignals()
+        values = merge_signals(regex, None) if enriched.status == "ok" else []
+        job = None
+        if enriched.status == "ok" and enriched.bundle is not None:
+            if enriched.llm is not None:
+                # Already extracted (and validated) for this domain on a prior search — reuse it
+                # and skip the LLM queue entirely (spec §7.3's per-domain budget guard).
+                values = merge_signals(regex, enriched.llm)
+                lead.llm_status = "done"
+            elif not pool.enabled:
+                lead.llm_status = "disabled"
+            elif needs_llm(regex, bool(lead.street), enriched.bundle.pages[0].text_quality):
+                lead.llm_status = "queued"
+                job = LLMJob(
+                    lead_id=lead.id, osm_name=lead.name, bundle=enriched.bundle, regex=regex
+                )
+        with session_scope() as s:
+            s.add(lead)
+            for ct in contacts:
+                s.add(ct)
+            s.flush()
+            _apply_signals_and_score(s, lead, contacts, values, industry, weights, year)
+            s.flush()
+            out = lead_to_out(*_load_out(s, lead.id))
+        bus.publish(search.id, "lead", out.model_dump())
+        return job
+    except Exception:  # noqa: BLE001 — one lead's failure must not sink the whole search
+        log.exception("lead.failed", extra={"osm_id": c.place.osm_id})
+        return None
 
 
 async def _run_llm_job(
@@ -288,7 +309,7 @@ async def _run_llm_job(
     with session_scope() as s:
         lead, contacts, _, _ = _load_out(s, job.lead_id)
         lead.llm_status = "done" if status == "ok" else status
-        values = merge_signals(job.regex, result if isinstance(result, ExtractionResult) else None)
+        values = merge_signals(job.regex, result)
         _apply_signals_and_score(s, lead, contacts, values, industry, weights, year)
         if result is not None and lead.normalized_domain:
             cache = s.get(EnrichmentCache, lead.normalized_domain)
@@ -338,6 +359,7 @@ async def run_search(
     year = reference_year or datetime.now(UTC).year
     own_client = client is None
     client = client or httpx.AsyncClient()
+    drain_task: asyncio.Task | None = None
     try:
         with session_scope() as s:
             search = s.get(Search, search_id)
@@ -398,19 +420,33 @@ async def run_search(
         locks: dict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
         with session_scope() as s:
             search = s.get(Search, search_id)
-        jobs = await asyncio.gather(
+        raw_results = await asyncio.gather(
             *[
                 _process_candidate(
                     search, c, industry, weights, year, client, pool, bus, sem, locks
                 )
                 for c in candidates
-            ]
+            ],
+            return_exceptions=True,
         )
-        queue = [j for j in jobs if j is not None][:LLM_PER_SEARCH_CAP]
+        jobs: list[LLMJob] = []
+        for r in raw_results:
+            if isinstance(r, LLMJob):
+                jobs.append(r)
+            elif isinstance(r, BaseException):
+                log.error("candidate.failed", exc_info=r)
+        queue = jobs[:LLM_PER_SEARCH_CAP]
+        over_cap = jobs[LLM_PER_SEARCH_CAP:]
         with session_scope() as s:
             row = s.get(Search, search_id)
             row.lead_count, row.llm_pending = len(candidates), len(queue)
             s.add(row)
+            if over_cap:
+                s.execute(
+                    update(Lead)
+                    .where(Lead.id.in_([j.lead_id for j in over_cap]))
+                    .values(llm_status="skipped_budget")
+                )
         if queue:
             bus.publish(
                 search_id,
@@ -432,6 +468,10 @@ async def run_search(
                         row = s.get(Search, search_id)
                         row.llm_pending = max(0, row.llm_pending - 1)
                         s.add(row)
+                        lead = s.get(Lead, job.lead_id)
+                        if lead:
+                            lead.llm_status = "skipped_budget"
+                            s.add(lead)
 
         drain_task = asyncio.create_task(drain())
         try:
@@ -447,6 +487,10 @@ async def run_search(
         bus.close(search_id)
         if not drain_task.done():
             await drain_task  # keep refining after the stream closed; updates persist for polling
+    except asyncio.CancelledError:
+        if drain_task is not None:
+            drain_task.cancel()
+        raise
     except Exception as e:  # noqa: BLE001
         log.exception("search.failed", extra={"search_id": search_id})
         _fail(search_id, bus, f"Search failed: {type(e).__name__}")
