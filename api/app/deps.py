@@ -1,9 +1,12 @@
 import asyncio
+from typing import Annotated
 
 import httpx
-from fastapi import Request
+from fastapi import Depends
+from sqlmodel import Session
 
 from app.config import get_settings
+from app.db import get_session
 from app.llm.client import LLMPool
 from app.pipeline.runner import run_search  # re-exported so tests can monkeypatch deps.run_search
 from app.services.events import EventBus, bus
@@ -11,6 +14,11 @@ from app.services.events import EventBus, bus
 _pool: LLMPool | None = None
 _http: httpx.AsyncClient | None = None
 _tasks: set[asyncio.Task] = set()
+
+# Named alias for the DB-session dependency: `s: SessionDep` in a route reads exactly like
+# `s: Session = Depends(get_session)` but the `Depends(...)` call lives here, once, instead of
+# in every route's argument defaults (which is what ruff's B008 warns about).
+SessionDep = Annotated[Session, Depends(get_session)]
 
 
 def get_pool() -> LLMPool:
@@ -41,8 +49,12 @@ def start_search_task(search_id: str) -> None:
 
 async def shutdown() -> None:
     global _pool, _http
-    for t in list(_tasks):
+    tasks = list(_tasks)
+    for t in tasks:
         t.cancel()
+    if tasks:
+        await asyncio.gather(*tasks, return_exceptions=True)
+    _tasks.clear()
     if _http is not None:
         await _http.aclose()
     _pool, _http = None, None
@@ -51,7 +63,3 @@ async def shutdown() -> None:
 def reset_for_tests() -> None:
     global _pool, _http
     _pool, _http = None, None
-
-
-def request_settings(request: Request):
-    return get_settings()

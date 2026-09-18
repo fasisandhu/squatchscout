@@ -59,6 +59,16 @@ def test_create_search_rejects_unknown_industry_and_bad_limit(client):
     )
 
 
+def test_create_search_clamps_limit_to_max_leads_per_search(client):
+    r = client.post(
+        "/api/searches", json={"industry_key": "dentist", "location": "Austin", "limit": 100}
+    )
+    assert r.status_code == 202
+    sid = r.json()["id"]
+    with session_scope() as s:
+        assert s.get(Search, sid).limit == 60
+
+
 def test_stream_replays_events_then_ends(client):
     sid = new_id()
     with session_scope() as s:
