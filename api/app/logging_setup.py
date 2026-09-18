@@ -28,5 +28,14 @@ def configure_logging(level: str = "INFO") -> None:
     root = logging.getLogger()
     root.handlers[:] = [handler]
     root.setLevel(level.upper())
-    for noisy in ("httpx", "httpcore", "uvicorn.access"):
+    for noisy in ("httpx", "httpcore"):
         logging.getLogger(noisy).setLevel("WARNING")
+    # Uvicorn installs its own plain-text handlers directly on these three loggers with
+    # propagate=False (see uvicorn.config.LOGGING_CONFIG), so left alone they bypass our root
+    # JSON handler entirely. Strip their handlers and let records propagate up to root instead —
+    # uvicorn.access stays at INFO on purpose (request logging is a §13 deliverable), not WARNING.
+    for uv in ("uvicorn", "uvicorn.error", "uvicorn.access"):
+        uv_logger = logging.getLogger(uv)
+        uv_logger.handlers.clear()
+        uv_logger.propagate = True
+        uv_logger.setLevel("INFO")

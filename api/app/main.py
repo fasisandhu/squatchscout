@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -11,6 +12,8 @@ from app.config import get_settings
 from app.logging_setup import configure_logging
 from app.routers import export, health, industries, intent, leads, searches
 from app.services.housekeeping import run_daily
+
+log = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -40,6 +43,10 @@ def create_app() -> FastAPI:
         try:
             return await call_next(request)
         except Exception as exc:
+            log.exception(
+                "request.failed",
+                extra={"path": request.url.path, "method": request.method},
+            )
             return JSONResponse(
                 status_code=500,
                 content={"error": {"code": "internal", "message": type(exc).__name__}},
@@ -67,7 +74,11 @@ def create_app() -> FastAPI:
         return JSONResponse(status_code=exc.status_code, content={"error": detail})
 
     @app.exception_handler(Exception)
-    async def unhandled(_: Request, exc: Exception):  # backstop only — see middleware above
+    async def unhandled(request: Request, exc: Exception):  # backstop only — see middleware above
+        log.exception(
+            "request.failed",
+            extra={"path": request.url.path, "method": request.method},
+        )
         return JSONResponse(
             status_code=500, content={"error": {"code": "internal", "message": type(exc).__name__}}
         )

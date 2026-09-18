@@ -59,11 +59,17 @@ def purge_old(session: Session, now: datetime, purge_after_days: int) -> dict[st
     return counts
 
 
+def _purge_once() -> dict[str, int]:
+    with session_scope() as s:
+        return purge_old(s, utcnow(), get_settings().purge_after_days)
+
+
 async def run_daily(stop: asyncio.Event) -> None:
     while not stop.is_set():
         try:
-            with session_scope() as s:
-                counts = purge_old(s, utcnow(), get_settings().purge_after_days)
+            # purge_old is synchronous DB work; run it off the event loop so it never stalls
+            # in-flight requests or SSE streams for its duration.
+            counts = await asyncio.to_thread(_purge_once)
             log.info("housekeeping.purged", extra={"counts": counts})
         except Exception:
             log.exception("housekeeping.failed")
