@@ -1,3 +1,5 @@
+import csv
+import io
 from unittest.mock import MagicMock
 
 import pytest
@@ -6,7 +8,7 @@ from fastapi.testclient import TestClient
 from app import deps
 from app.db import session_scope
 from app.main import create_app
-from app.models import Lead, Search, new_id
+from app.models import FactorScoreRow, Lead, Search, new_id
 from app.services.events import bus
 
 
@@ -135,3 +137,79 @@ def test_export_endpoint_filters_ids_and_sets_attachment(client):
     assert "Biz 2" in r.text and "Biz 1" not in r.text and r.text.startswith("Company name,")
     assert client.get(f"/api/searches/{sid}/export?format=xml").status_code == 422
     assert client.get(f"/api/searches/{sid}/export?weights=1,2").status_code == 400
+
+
+def test_export_weights_query_param_maps_factors_in_order(client):
+    # A lead scoring 100% on `reachability` only and 0% on everything else: a transposed
+    # FACTORS<->weights zip would silently swap which query value drives the score.
+    sid = new_id()
+    with session_scope() as s:
+        s.add(Search(id=sid, industry_key="dentist", location_query="Austin", limit=5))
+        s.add(
+            Lead(
+                id="L1",
+                search_id=sid,
+                osm_type="node",
+                osm_id=1,
+                name="Biz 1",
+                display_name="Biz 1",
+                normalized_name="biz 1",
+                lat=1.0,
+                lon=2.0,
+                osm_tags={},
+                score=50.0,
+                tier="C",
+            )
+        )
+        for factor, points, max_points in (
+            ("reachability", 25, 25),
+            ("establishment", 0, 20),
+            ("digital_gap", 0, 20),
+            ("buybox", 0, 20),
+            ("succession", 0, 15),
+        ):
+            s.add(
+                FactorScoreRow(
+                    lead_id="L1", factor=factor, points=points, max_points=max_points, reasons=[]
+                )
+            )
+
+    def score_for(weights_qs):
+        r = client.get(f"/api/searches/{sid}/export?format=csv&weights={weights_qs}")
+        _, rest = r.text.split("\n", 1)
+        rows = list(csv.DictReader(io.StringIO(rest)))
+        return rows[0]["score"]
+
+    assert score_for("100,0,0,0,0") == "100.0"  # all weight on reachability, which is maxed
+    assert score_for("0,0,0,0,100") == "0.0"  # all weight on succession, which is zero
+
+
+def test_generic_export_has_utf8_bom_hubspot_does_not(client):
+    sid = new_id()
+    with session_scope() as s:
+        s.add(Search(id=sid, industry_key="dentist", location_query="Austin", limit=5))
+        s.add(
+            Lead(
+                id="L1",
+                search_id=sid,
+                osm_type="node",
+                osm_id=1,
+                name="Biz 1",
+                display_name="Biz 1",
+                normalized_name="biz 1",
+                lat=1.0,
+                lon=2.0,
+                osm_tags={},
+                score=50.0,
+                tier="C",
+            )
+        )
+    csv_r = client.get(f"/api/searches/{sid}/export?format=csv")
+    hub_r = client.get(f"/api/searches/{sid}/export?format=hubspot")
+    assert csv_r.content.startswith(b"\xef\xbb\xbf")
+    assert not hub_r.content.startswith(b"\xef\xbb\xbf")
+    decoded = csv_r.content.decode("utf-8-sig")
+    first, rest = decoded.split("\n", 1)
+    assert first.startswith("# SquatchScout export")
+    rows = list(csv.DictReader(io.StringIO(rest)))
+    assert rows[0]["display_name"] == "Biz 1"

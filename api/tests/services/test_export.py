@@ -1,6 +1,7 @@
 import csv
 import io
 
+from app.pipeline.score import WEIGHT_PRESETS
 from app.schemas import AddressOut, ContactOut, FactorScoreOut, LeadOut, SignalOut
 from app.services.export import HUBSPOT_COLUMNS, to_csv, to_hubspot_csv
 
@@ -66,7 +67,7 @@ def lead(**over):
 
 
 def test_generic_csv_has_comment_header_and_flat_columns():
-    out = to_csv([lead()], W)
+    out = to_csv([lead()], W, recompute=True)
     first, rest = out.split("\n", 1)
     assert first.startswith("# SquatchScout export")
     assert "weights R/E/D/B/S=25/20/20/20/15" in first
@@ -80,7 +81,7 @@ def test_generic_csv_has_comment_header_and_flat_columns():
 
 
 def test_hubspot_csv_columns_and_attribution_column():
-    out = to_hubspot_csv([lead()], W)
+    out = to_hubspot_csv([lead()], W, recompute=True)
     rows = list(csv.DictReader(io.StringIO(out)))
     assert list(rows[0].keys()) == HUBSPOT_COLUMNS
     r = rows[0]
@@ -108,6 +109,18 @@ def test_score_recomputed_from_weights():
         "buybox": 0,
         "succession": 0,
     }
-    rows = list(csv.DictReader(io.StringIO(to_hubspot_csv([lead()], heavy))))
+    rows = list(csv.DictReader(io.StringIO(to_hubspot_csv([lead()], heavy, recompute=True))))
     assert rows[0]["SquatchScout Score"] == "100.0"
     assert rows[0]["Tier"] == "A"
+
+
+def test_default_export_labels_the_searchs_own_weights():
+    # No override supplied: the exported label must name the search's own weight preset (the
+    # weights actually behind the stored score), never an empty/zeroed placeholder — and the
+    # stored score/tier must be used as-is, not recomputed.
+    out = to_csv([lead()], WEIGHT_PRESETS["balanced"], recompute=False)
+    first, rest = out.split("\n", 1)
+    assert "weights R/E/D/B/S=25/20/20/20/15" in first
+    rows = list(csv.DictReader(io.StringIO(rest)))
+    assert rows[0]["score"] == "81.5"
+    assert rows[0]["tier"] == "A"

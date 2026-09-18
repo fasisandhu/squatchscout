@@ -62,8 +62,10 @@ def _weights_str(w: dict[str, float]) -> str:
     return "/".join(str(int(w.get(f, 0))) for f in FACTORS)
 
 
-def _rescore(lead: LeadOut, weights: dict[str, float] | None) -> tuple[float | None, str | None]:
-    if not weights or not lead.factor_scores:
+def _rescore(
+    lead: LeadOut, weights: dict[str, float], recompute: bool
+) -> tuple[float | None, str | None]:
+    if not recompute or not lead.factor_scores:
         return lead.score, lead.tier
     fs = [FactorScore(**f.model_dump()) for f in lead.factor_scores]
     t = total(fs, weights)
@@ -86,15 +88,15 @@ def _reasons(lead: LeadOut) -> str:
     return "; ".join(r for f in lead.factor_scores for r in f.reasons)
 
 
-def to_csv(leads: list[LeadOut], weights: dict[str, float] | None) -> str:
+def to_csv(leads: list[LeadOut], weights: dict[str, float], recompute: bool = False) -> str:
     buf = io.StringIO()
     buf.write(
-        f"# SquatchScout export · weights R/E/D/B/S={_weights_str(weights or {})} · {ATTRIBUTION}\n"
+        f"# SquatchScout export · weights R/E/D/B/S={_weights_str(weights)} · {ATTRIBUTION}\n"
     )
     w = csv.DictWriter(buf, fieldnames=CSV_COLUMNS, lineterminator="\n")
     w.writeheader()
     for lead in leads:
-        score, tr = _rescore(lead, weights)
+        score, tr = _rescore(lead, weights, recompute)
         a = lead.address
         w.writerow(
             {
@@ -131,14 +133,17 @@ def to_csv(leads: list[LeadOut], weights: dict[str, float] | None) -> str:
 
 
 def to_hubspot_csv(
-    leads: list[LeadOut], weights: dict[str, float] | None, industry_label: str = ""
+    leads: list[LeadOut],
+    weights: dict[str, float],
+    industry_label: str = "",
+    recompute: bool = False,
 ) -> str:
     buf = io.StringIO()
     w = csv.DictWriter(buf, fieldnames=HUBSPOT_COLUMNS, lineterminator="\n")
     w.writeheader()
-    sources = f"SquatchScout · weights R/E/D/B/S={_weights_str(weights or {})} · {ATTRIBUTION}"
+    sources = f"SquatchScout · weights R/E/D/B/S={_weights_str(weights)} · {ATTRIBUTION}"
     for lead in leads:
-        score, tr = _rescore(lead, weights)
+        score, tr = _rescore(lead, weights, recompute)
         a = lead.address
         phones = _contacts(lead, "phone")
         verified = _contacts(lead, "email", {"verified"})
