@@ -39,4 +39,21 @@ describe("LeadDrawer", () => {
     fireEvent.keyDown(document, { key: "Escape" });
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it("keeps focus on a control inside the drawer when the lead is replaced by an equal object (e.g. a lead_updated re-render)", () => {
+    const l1 = lead();
+    const { rerender } = render(<LeadDrawer lead={l1} weights={weights} llmEnabled={false} onClose={() => {}} />);
+
+    const closeButton = screen.getByLabelText("Close");
+    closeButton.focus();
+    expect(document.activeElement).toBe(closeButton);
+
+    // A fresh object with the same id and equal content, and a fresh onClose reference —
+    // mirroring what rankedLeads() + App.tsx's inline `onClose={() => setOpenId(null)}` produce
+    // on every unrelated re-render while the drawer is open.
+    const l2: RankedLead = { ...l1, factor_scores: [...l1.factor_scores], contacts: [...l1.contacts] };
+    rerender(<LeadDrawer lead={l2} weights={weights} llmEnabled={false} onClose={() => {}} />);
+
+    expect(document.activeElement).toBe(closeButton);
+  });
 });

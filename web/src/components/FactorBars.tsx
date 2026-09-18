@@ -14,7 +14,7 @@ export function FactorBars({ factorScores, weights }: { factorScores: FactorScor
           <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-2" role="progressbar" aria-valuenow={fs.points} aria-valuemax={fs.max_points} aria-label={FACTOR_LABELS[fs.factor]}>
             <div className="h-full bg-gradient-to-r from-accent to-accent-2" style={{ width: `${(fs.points / fs.max_points) * 100}%` }} />
           </div>
-          <ul className="mt-1 list-disc pl-4 text-xs text-muted">{fs.reasons.map((r) => <li key={r}>{r}</li>)}</ul>
+          <ul className="mt-1 list-disc pl-4 text-xs text-muted">{fs.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul>
         </li>
       ))}
     </ul>

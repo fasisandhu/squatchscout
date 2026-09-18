@@ -20,7 +20,7 @@ export function OpenerPanel({ leadId }: { leadId: string }) {
         <>
           <pre className="whitespace-pre-wrap rounded-lg border border-border bg-surface-2 p-3 text-sm">{text}</pre>
           <div className="flex gap-2">
-            <button type="button" onClick={() => navigator.clipboard?.writeText(text)} className="inline-flex items-center gap-1 text-xs text-muted hover:text-text"><Copy className="size-3" /> copy</button>
+            <button type="button" onClick={() => navigator.clipboard?.writeText(text).catch(() => setErr("Couldn't copy — select the text above instead."))} className="inline-flex items-center gap-1 text-xs text-muted hover:text-text"><Copy className="size-3" /> copy</button>
             <button type="button" onClick={draft} disabled={busy} className="text-xs text-muted hover:text-text">redraft</button>
           </div>
         </>

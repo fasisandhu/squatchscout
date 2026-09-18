@@ -11,13 +11,20 @@ import { SignalsList } from "./SignalsList";
 export function LeadDrawer({ lead, weights, llmEnabled, onClose }: { lead: RankedLead | null; weights: Weights; llmEnabled: boolean; onClose: () => void }) {
   const panel = useRef<HTMLDivElement>(null);
   const restore = useRef<HTMLElement | null>(null);
+  const onCloseRef = useRef(onClose);
 
+  useEffect(() => { onCloseRef.current = onClose; });
+
+  // Keyed on the lead's identity only (not the lead object or onClose, both of which are new
+  // every render) so an unrelated App re-render — a slider drag, a `lead_updated` SSE event for
+  // this same lead, a `status` tick — doesn't tear down and re-arm the trap and bounce focus.
+  const leadId = lead?.id ?? null;
   useEffect(() => {
-    if (!lead) return;
+    if (!leadId) return;
     restore.current = document.activeElement as HTMLElement | null;
     panel.current?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onCloseRef.current();
       if (e.key === "Tab" && panel.current) {  // simple focus trap
         const els = panel.current.querySelectorAll<HTMLElement>('button, a[href], input, [tabindex]:not([tabindex="-1"])');
         if (!els.length) return;
@@ -28,7 +35,7 @@ export function LeadDrawer({ lead, weights, llmEnabled, onClose }: { lead: Ranke
     };
     document.addEventListener("keydown", onKey);
     return () => { document.removeEventListener("keydown", onKey); restore.current?.focus(); };
-  }, [lead, onClose]);
+  }, [leadId]);
 
   if (!lead) return null;
   const a = lead.address;
