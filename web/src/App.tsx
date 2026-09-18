@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AttributionFooter } from "./components/AttributionFooter";
 import { EmptyState } from "./components/EmptyState";
+import { ErrorToast } from "./components/ErrorToast";
+import { ExportMenu } from "./components/ExportMenu";
 import { LeadDrawer } from "./components/LeadDrawer";
 import { ResultsTable } from "./components/ResultsTable";
 import { SearchBar } from "./components/SearchBar";
@@ -17,10 +19,13 @@ export default function App() {
   const session = useSearchSession();
   const [exampleText, setExampleText] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
   const { state } = session;
   const ranked = rankedLeads(state);
   const sum = summary(state);
   const busy = state.phase === "starting" || state.phase === "streaming";
+
+  useEffect(() => { if (state.error) setToast(state.error); }, [state.error]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -29,10 +34,13 @@ export default function App() {
           <span className="bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-lg font-bold text-transparent">{APP_NAME}</span>
           <span className="text-xs text-muted">ranked · verified · explained</span>
         </div>
-        {boot.apiDown && (
-          <button onClick={boot.retry} className="rounded-md border border-tier-c/50 px-2 py-1 text-xs text-tier-c">API unreachable — retry</button>
-        )}
       </header>
+      {boot.apiDown && (
+        <div className="flex w-full flex-wrap items-center justify-center gap-2 bg-tier-c/10 px-4 py-2 text-center text-sm text-tier-c">
+          <span>The API is not reachable. If it was just deployed it may still be starting — retry in a few seconds.</span>
+          <button type="button" onClick={boot.retry} className="rounded-md border border-tier-c/50 px-2 py-0.5 text-xs font-medium hover:bg-tier-c/10">Retry</button>
+        </div>
+      )}
       <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 px-4 py-6">
         <SearchBar key={exampleText ?? "bar"} industries={boot.industries} llmEnabled={boot.llmEnabled} busy={busy}
           initialText={exampleText ?? undefined}
@@ -49,12 +57,14 @@ export default function App() {
             <aside className="flex flex-col gap-4">
               <WeightsPanel weights={state.weights} preset={state.preset} onChange={session.setWeights} onPreset={session.applyPreset} />
               <SummaryTiles found={sum.found} verifiedEmailPct={sum.verifiedEmailPct} tiers={sum.tiers} refined={sum.refined} llmEnabled={boot.llmEnabled} />
+              <ExportMenu searchId={state.searchId} selected={state.selected} total={ranked.length} weights={state.weights} disabled={state.phase === "starting"} />
             </aside>
           </div>
         )}
       </main>
       <AttributionFooter version={boot.version} llmEnabled={boot.llmEnabled} />
       <LeadDrawer lead={ranked.find((l) => l.id === openId) ?? null} weights={state.weights} llmEnabled={boot.llmEnabled} onClose={() => setOpenId(null)} />
+      <ErrorToast message={toast} onDismiss={() => setToast(null)} />
     </div>
   );
 }
