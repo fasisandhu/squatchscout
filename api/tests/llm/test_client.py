@@ -18,6 +18,11 @@ def rate_limit_error(retry_after="0"):
     )
 
 
+def not_found_error():
+    req = httpx.Request("POST", "https://api.groq.com/openai/v1/chat/completions")
+    return groq.NotFoundError("no such model", response=httpx.Response(404, request=req), body=None)
+
+
 class FakeGroq:
     """Scripted responses per model: list of callables returning content or raising."""
 
@@ -102,3 +107,35 @@ async def test_daily_soft_cap_and_bad_json():
     assert (await pool.complete_json(schema_name="o", schema=OPENER_SCHEMA, system="s", user="u"))[
         1
     ] == "skipped_budget"
+
+
+async def test_model_specific_4xx_falls_to_next_model():
+    fake = FakeGroq({"m1": [not_found_error()], "m2": [json.dumps({"opener": "from m2"})]})
+    pool = LLMPool(settings(), groq_client=fake, sleep=fast_sleep)
+    data, status = await pool.complete_json(
+        schema_name="o", schema=OPENER_SCHEMA, system="s", user="u"
+    )
+    assert status == "ok" and data["opener"] == "from m2" and fake.calls == ["m1", "m2"]
+
+
+async def test_empty_model_pool_is_disabled():
+    fake = FakeGroq({})
+    pool = LLMPool(Settings(groq_api_key="k", groq_models=[]), groq_client=fake, sleep=fast_sleep)
+    assert await pool.complete_json(
+        schema_name="o", schema=OPENER_SCHEMA, system="s", user="u"
+    ) == (None, "disabled")
+    assert fake.calls == []
+
+
+async def test_non_numeric_retry_after_uses_default_wait():
+    fake = FakeGroq({"m1": [rate_limit_error(retry_after="abc"), json.dumps({"opener": "hi"})]})
+    waits = []
+
+    async def record_sleep(s):
+        waits.append(s)
+
+    pool = LLMPool(settings(), groq_client=fake, sleep=record_sleep)
+    data, status = await pool.complete_json(
+        schema_name="o", schema=OPENER_SCHEMA, system="s", user="u"
+    )
+    assert status == "ok" and data == {"opener": "hi"} and waits == [2.0]

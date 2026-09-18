@@ -65,7 +65,7 @@ class LLMPool:
         user: str,
         max_tokens: int = 300,
     ) -> tuple[dict | None, LLMStatus]:
-        if not self.enabled:
+        if not self.enabled or not self.models:
             return None, "disabled"
         if not self._budget_ok():
             return None, "skipped_budget"
@@ -92,7 +92,15 @@ class LLMPool:
                         continue
                     log.warning("llm.rate_limited", extra={"model": model})
                     break  # next model
-                except (json.JSONDecodeError, groq.APIError, KeyError, IndexError) as e:
+                except groq.APIStatusError as e:
+                    if e.status_code in (400, 404, 422):
+                        log.warning(
+                            "llm.model_rejected", extra={"model": model, "status": e.status_code}
+                        )
+                        break  # model-specific problem → try the next model in the pool
+                    log.warning("llm.error", extra={"model": model, "status": e.status_code})
+                    return None, "error"
+                except (json.JSONDecodeError, groq.APIError, AttributeError, IndexError) as e:
                     log.warning("llm.error", extra={"model": model, "err": type(e).__name__})
                     return None, "error"
         return None, "skipped_rate_limit"
