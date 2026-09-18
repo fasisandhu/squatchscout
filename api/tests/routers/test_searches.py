@@ -107,3 +107,31 @@ def test_leads_endpoints_and_404s(client):
     assert client.get("/api/searches/nope").json() == {
         "error": {"code": "not_found", "message": "Search not found"}
     }
+
+
+def test_export_endpoint_filters_ids_and_sets_attachment(client):
+    sid = new_id()
+    with session_scope() as s:
+        s.add(Search(id=sid, industry_key="dentist", location_query="Austin", limit=5))
+        for i in (1, 2):
+            s.add(
+                Lead(
+                    id=f"L{i}",
+                    search_id=sid,
+                    osm_type="node",
+                    osm_id=i,
+                    name=f"Biz {i}",
+                    display_name=f"Biz {i}",
+                    normalized_name=f"biz {i}",
+                    lat=1.0,
+                    lon=2.0,
+                    osm_tags={},
+                    score=50.0 + i,
+                    tier="C",
+                )
+            )
+    r = client.get(f"/api/searches/{sid}/export?format=hubspot&ids=L2")
+    assert r.status_code == 200 and r.headers["content-disposition"].endswith('-hubspot.csv"')
+    assert "Biz 2" in r.text and "Biz 1" not in r.text and r.text.startswith("Company name,")
+    assert client.get(f"/api/searches/{sid}/export?format=xml").status_code == 422
+    assert client.get(f"/api/searches/{sid}/export?weights=1,2").status_code == 400
