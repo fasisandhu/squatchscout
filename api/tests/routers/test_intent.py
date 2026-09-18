@@ -89,6 +89,7 @@ def test_opener_grounded_in_signals(make_client):
     sid, lid = new_id(), new_id()
     with session_scope() as s:
         s.add(Search(id=sid, industry_key="dentist", location_query="Austin", limit=5))
+        s.flush()
         s.add(
             Lead(
                 id=lid,
@@ -104,6 +105,7 @@ def test_opener_grounded_in_signals(make_client):
                 city="Austin",
             )
         )
+        s.flush()
         s.add(Signal(lead_id=lid, key="founded_year", value="1998", source="regex"))
     r = c.post(f"/api/leads/{lid}/opener")
     assert r.status_code == 200 and r.json()["opener"].count("\n") == 2

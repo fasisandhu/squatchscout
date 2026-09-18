@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 from contextlib import contextmanager
 
-from sqlalchemy import JSON
+from sqlalchemy import JSON, event
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Session, create_engine
 
@@ -17,8 +17,19 @@ def get_engine():
     global _engine
     if _engine is None:
         url = get_settings().database_url
-        kwargs = {"connect_args": {"check_same_thread": False}} if url.startswith("sqlite") else {}
+        is_sqlite = url.startswith("sqlite")
+        kwargs = {"connect_args": {"check_same_thread": False}} if is_sqlite else {}
         _engine = create_engine(url, pool_pre_ping=True, **kwargs)
+        if is_sqlite:
+            # SQLite has FK enforcement off by default (per-connection, not per-database), unlike
+            # Postgres — without this, dev/test would silently accept a delete order that violates
+            # a foreign key and only find out in production. Match production's semantics here.
+            @event.listens_for(_engine, "connect")
+            def _enable_sqlite_fk(dbapi_connection, connection_record):
+                cursor = dbapi_connection.cursor()
+                cursor.execute("PRAGMA foreign_keys=ON")
+                cursor.close()
+
     return _engine
 
 

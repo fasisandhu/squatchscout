@@ -88,6 +88,7 @@ def test_leads_endpoints_and_404s(client):
     sid = new_id()
     with session_scope() as s:
         s.add(Search(id=sid, industry_key="dentist", location_query="Austin", limit=5))
+        s.flush()
         s.add(
             Lead(
                 id="L1",
@@ -115,6 +116,7 @@ def test_export_endpoint_filters_ids_and_sets_attachment(client):
     sid = new_id()
     with session_scope() as s:
         s.add(Search(id=sid, industry_key="dentist", location_query="Austin", limit=5))
+        s.flush()
         for i in (1, 2):
             s.add(
                 Lead(
@@ -145,6 +147,7 @@ def test_export_weights_query_param_maps_factors_in_order(client):
     sid = new_id()
     with session_scope() as s:
         s.add(Search(id=sid, industry_key="dentist", location_query="Austin", limit=5))
+        s.flush()
         s.add(
             Lead(
                 id="L1",
@@ -161,6 +164,7 @@ def test_export_weights_query_param_maps_factors_in_order(client):
                 tier="C",
             )
         )
+        s.flush()
         for factor, points, max_points in (
             ("reachability", 25, 25),
             ("establishment", 0, 20),
@@ -188,6 +192,7 @@ def test_generic_export_has_utf8_bom_hubspot_does_not(client):
     sid = new_id()
     with session_scope() as s:
         s.add(Search(id=sid, industry_key="dentist", location_query="Austin", limit=5))
+        s.flush()
         s.add(
             Lead(
                 id="L1",

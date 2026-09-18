@@ -281,6 +281,11 @@ async def _process_candidate(
                 )
         with session_scope() as s:
             s.add(lead)
+            # Flush the parent row before adding its children: SQLAlchemy's unit of work has no
+            # relationship() linking Lead/Contact, so without this it may emit the Contact INSERTs
+            # before the Lead INSERT — harmless when a DB has FK enforcement off, a genuine
+            # ForeignKeyViolation when it doesn't (SQLite now matches Postgres here; see db.py).
+            s.flush()
             for ct in contacts:
                 s.add(ct)
             s.flush()
