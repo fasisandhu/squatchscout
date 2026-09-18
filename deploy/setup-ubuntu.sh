@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # One-time server setup for SquatchScout on Ubuntu 24.04. Idempotent. Usage:
-#   curl -fsSL https://raw.githubusercontent.com/<owner>/squatchscout/main/deploy/setup-ubuntu.sh | bash -s -- https://github.com/<owner>/squatchscout.git
+#   curl -fsSL https://raw.githubusercontent.com/fasisandhu/squatchscout/main/deploy/setup-ubuntu.sh | bash -s -- https://github.com/fasisandhu/squatchscout.git
 set -euo pipefail
 REPO_URL="${1:?usage: setup-ubuntu.sh <repo-url>}"
 APP_DIR=/opt/squatchscout

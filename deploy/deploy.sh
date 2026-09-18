@@ -15,11 +15,23 @@ PREV="$(cat deploy/.deployed_sha 2>/dev/null || git rev-parse HEAD)"
 
 deploy_ref() {
   local ref="$1"
-  git fetch --quiet origin
-  git checkout --quiet --detach "$ref"
+  git fetch --quiet origin || return 1
+  # Resolve against the just-fetched remote-tracking ref first (so a branch name like "main"
+  # picks up what origin now has, not whatever local refs/heads/main pointed at when the box
+  # was cloned); fall back to treating the argument as a commit-ish (a sha already works either
+  # way since `git fetch` also updates commit objects, not just branch tips).
+  local target
+  if target="$(git rev-parse --verify --quiet "origin/$ref^{commit}")"; then
+    :
+  elif target="$(git rev-parse --verify --quiet "$ref^{commit}")"; then
+    :
+  else
+    echo "!! cannot resolve ref '$ref'"; return 1
+  fi
+  git checkout --quiet --detach "$target" || return 1
   local sha; sha="$(git rev-parse --short HEAD)"
   echo "→ building and starting api @ $sha"
-  APP_VERSION="$sha" "${COMPOSE[@]}" up -d --build api caddy postgres
+  APP_VERSION="$sha" "${COMPOSE[@]}" up -d --build api caddy postgres || return 1
   echo "→ waiting for https://$API_HOST/healthz to report $sha"
   for i in $(seq 1 30); do
     if curl -fsS --max-time 5 "https://$API_HOST/healthz" 2>/dev/null | grep -q "\"version\": *\"$sha\""; then
