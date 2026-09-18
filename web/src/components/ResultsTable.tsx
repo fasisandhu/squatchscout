@@ -1,4 +1,5 @@
 import { flexRender, type SortingState } from "@tanstack/react-table";
+// v9 is a ground-up rewrite; /legacy is the package's own v8-compatible API, which this table targets.
 import { getCoreRowModel, getSortedRowModel, useLegacyTable as useReactTable, type LegacyColumnDef as ColumnDef } from "@tanstack/react-table/legacy";
 import { ArrowDown, ArrowUp, Building2, MailCheck, ShieldAlert, Sparkles, Store } from "lucide-react";
 import { useMemo, useState } from "react";

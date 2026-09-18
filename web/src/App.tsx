@@ -4,9 +4,11 @@ import { EmptyState } from "./components/EmptyState";
 import { ResultsTable } from "./components/ResultsTable";
 import { SearchBar } from "./components/SearchBar";
 import { StatusStrip } from "./components/StatusStrip";
+import { SummaryTiles } from "./components/SummaryTiles";
+import { WeightsPanel } from "./components/WeightsPanel";
 import { APP_NAME } from "./config";
 import { useBootstrap } from "./hooks/useBootstrap";
-import { rankedLeads } from "./state/searchReducer";
+import { rankedLeads, summary } from "./state/searchReducer";
 import { useSearchSession } from "./state/useSearchSession";
 
 export default function App() {
@@ -17,6 +19,7 @@ export default function App() {
   void openId; // Task 24 wires the drawer
   const { state } = session;
   const ranked = rankedLeads(state);
+  const sum = summary(state);
   const busy = state.phase === "starting" || state.phase === "streaming";
 
   return (
@@ -38,8 +41,16 @@ export default function App() {
         {state.phase === "idle" ? (
           <EmptyState llmEnabled={boot.llmEnabled} onExample={(t) => setExampleText(t)} />
         ) : (
-          <ResultsTable leads={ranked} selected={state.selected} onToggle={session.toggleSelect} onSelectAll={session.selectAll}
-            onClear={session.clearSelection} onOpen={setOpenId} phase={state.phase} />
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <section className="min-w-0">
+              <ResultsTable leads={ranked} selected={state.selected} onToggle={session.toggleSelect} onSelectAll={session.selectAll}
+                onClear={session.clearSelection} onOpen={setOpenId} phase={state.phase} />
+            </section>
+            <aside className="flex flex-col gap-4">
+              <WeightsPanel weights={state.weights} preset={state.preset} onChange={session.setWeights} onPreset={session.applyPreset} />
+              <SummaryTiles found={sum.found} verifiedEmailPct={sum.verifiedEmailPct} tiers={sum.tiers} refined={sum.refined} llmEnabled={boot.llmEnabled} />
+            </aside>
+          </div>
         )}
       </main>
       <AttributionFooter version={boot.version} llmEnabled={boot.llmEnabled} />
