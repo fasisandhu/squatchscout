@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AttributionFooter } from "./components/AttributionFooter";
 import { EmptyState } from "./components/EmptyState";
+import { LeadDrawer } from "./components/LeadDrawer";
 import { ResultsTable } from "./components/ResultsTable";
 import { SearchBar } from "./components/SearchBar";
 import { StatusStrip } from "./components/StatusStrip";
@@ -16,7 +17,6 @@ export default function App() {
   const session = useSearchSession();
   const [exampleText, setExampleText] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
-  void openId; // Task 24 wires the drawer
   const { state } = session;
   const ranked = rankedLeads(state);
   const sum = summary(state);
@@ -54,6 +54,7 @@ export default function App() {
         )}
       </main>
       <AttributionFooter version={boot.version} llmEnabled={boot.llmEnabled} />
+      <LeadDrawer lead={ranked.find((l) => l.id === openId) ?? null} weights={state.weights} llmEnabled={boot.llmEnabled} onClose={() => setOpenId(null)} />
     </div>
   );
 }
