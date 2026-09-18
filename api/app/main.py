@@ -7,7 +7,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app import deps
 from app.config import get_settings
-from app.routers import export, health, industries, leads, searches
+from app.routers import export, health, industries, intent, leads, searches
 
 
 @asynccontextmanager
@@ -64,7 +64,7 @@ def create_app() -> FastAPI:
             status_code=500, content={"error": {"code": "internal", "message": type(exc).__name__}}
         )
 
-    for r in (health, industries, searches, leads, export):
+    for r in (health, industries, searches, leads, export, intent):
         app.include_router(r.router)
     return app
 

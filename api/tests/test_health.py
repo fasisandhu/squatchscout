@@ -4,7 +4,7 @@ from app.main import create_app
 
 
 def test_healthz_reports_status_and_llm_flag(db, monkeypatch):
-    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    monkeypatch.setenv("GROQ_API_KEY", "")
     client = TestClient(create_app())
     r = client.get("/healthz")
     assert r.status_code == 200
