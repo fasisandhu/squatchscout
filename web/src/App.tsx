@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AttributionFooter } from "./components/AttributionFooter";
 import { EmptyState } from "./components/EmptyState";
+import { ResultsTable } from "./components/ResultsTable";
 import { SearchBar } from "./components/SearchBar";
 import { StatusStrip } from "./components/StatusStrip";
 import { APP_NAME } from "./config";
@@ -13,6 +14,7 @@ export default function App() {
   const session = useSearchSession();
   const [exampleText, setExampleText] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+  void openId; // Task 24 wires the drawer
   const { state } = session;
   const ranked = rankedLeads(state);
   const busy = state.phase === "starting" || state.phase === "streaming";
@@ -36,16 +38,8 @@ export default function App() {
         {state.phase === "idle" ? (
           <EmptyState llmEnabled={boot.llmEnabled} onExample={(t) => setExampleText(t)} />
         ) : (
-          <ol className="card divide-y divide-border">
-            {ranked.map((l) => (
-              <li key={l.id}>
-                <button type="button" onClick={() => setOpenId(l.id)} aria-pressed={openId === l.id}
-                  className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-surface-2 ${openId === l.id ? "bg-surface-2" : ""}`}>
-                  <span>{l.display_name}</span><span className="tabular-nums">{l.computedScore} · {l.computedTier}</span>
-                </button>
-              </li>
-            ))}
-          </ol>
+          <ResultsTable leads={ranked} selected={state.selected} onToggle={session.toggleSelect} onSelectAll={session.selectAll}
+            onClear={session.clearSelection} onOpen={setOpenId} phase={state.phase} />
         )}
       </main>
       <AttributionFooter version={boot.version} llmEnabled={boot.llmEnabled} />
