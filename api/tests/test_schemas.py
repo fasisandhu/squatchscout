@@ -109,6 +109,20 @@ def test_build_facts_prefers_higher_confidence_on_duplicate_keys():
     ]
     assert build_facts(lead, [], signals_c, industry).founded_year == 2005
 
+    # higher-confidence row listed FIRST -> it still wins (discriminates from plain last-wins)
+    signals_d = [
+        Signal(lead_id=lead.id, key="founded_year", value="1998", source="regex", confidence=0.9),
+        Signal(lead_id=lead.id, key="founded_year", value="2005", source="llm", confidence=0.4),
+    ]
+    assert build_facts(lead, [], signals_d, industry).founded_year == 1998
+
+    # same shape for a boolean-valued key
+    signals_e = [
+        Signal(lead_id=lead.id, key="family_owned", value="true", source="regex", confidence=0.9),
+        Signal(lead_id=lead.id, key="family_owned", value="false", source="llm", confidence=0.3),
+    ]
+    assert build_facts(lead, [], signals_e, industry).family_owned is True
+
 
 def test_lead_to_out_shape():
     lead = make_lead()
