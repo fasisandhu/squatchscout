@@ -84,6 +84,32 @@ def test_build_facts_maps_rows_to_flat_facts():
     assert f.has_website and f.site_reachable
 
 
+def test_build_facts_prefers_higher_confidence_on_duplicate_keys():
+    lead = make_lead()
+    industry = INDUSTRIES["dentist"]
+
+    # higher-confidence row (regex, 1.0) listed after the lower-confidence one (llm, 0.6) -> wins
+    signals_a = [
+        Signal(lead_id=lead.id, key="founded_year", value="2005", source="llm", confidence=0.6),
+        Signal(lead_id=lead.id, key="founded_year", value="1998", source="regex", confidence=1.0),
+    ]
+    assert build_facts(lead, [], signals_a, industry).founded_year == 1998
+
+    # reverse confidences: now llm (0.9) is the higher-confidence row -> it wins
+    signals_b = [
+        Signal(lead_id=lead.id, key="founded_year", value="1998", source="regex", confidence=0.5),
+        Signal(lead_id=lead.id, key="founded_year", value="2005", source="llm", confidence=0.9),
+    ]
+    assert build_facts(lead, [], signals_b, industry).founded_year == 2005
+
+    # equal confidence -> the later row in the list wins the tie
+    signals_c = [
+        Signal(lead_id=lead.id, key="founded_year", value="1998", source="regex", confidence=0.7),
+        Signal(lead_id=lead.id, key="founded_year", value="2005", source="llm", confidence=0.7),
+    ]
+    assert build_facts(lead, [], signals_c, industry).founded_year == 2005
+
+
 def test_lead_to_out_shape():
     lead = make_lead()
     out = lead_to_out(lead, [], [], [])

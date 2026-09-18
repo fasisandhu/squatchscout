@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -33,7 +34,7 @@ class AddressOut(BaseModel):
 
 
 class ContactOut(BaseModel):
-    kind: str
+    kind: Literal["email", "phone", "social"]
     value: str
     source: str
     verification_status: str
@@ -42,12 +43,12 @@ class ContactOut(BaseModel):
 class SignalOut(BaseModel):
     key: str
     value: str
-    source: str
+    source: Literal["osm", "regex", "llm"]
     confidence: float
 
 
 class FactorScoreOut(BaseModel):
-    factor: str
+    factor: Literal["reachability", "establishment", "digital_gap", "buybox", "succession"]
     points: float
     max_points: float
     reasons: list[str]
@@ -67,7 +68,7 @@ class LeadOut(BaseModel):
     enrichment_status: str
     llm_status: str
     score: float | None
-    tier: str | None
+    tier: Literal["A", "B", "C", "D"] | None
     contacts: list[ContactOut]
     signals: list[SignalOut]
     factor_scores: list[FactorScoreOut]
@@ -79,7 +80,7 @@ class SearchOut(BaseModel):
     location_query: str
     geocoded_name: str | None
     weight_preset: str
-    status: str
+    status: Literal["running", "done", "failed"]
     lead_count: int
     llm_pending: int
     error: str | None
@@ -156,10 +157,21 @@ def _bool(v: str | None) -> bool | None:
     return None if v is None else v.lower() == "true"
 
 
+def _resolve_signals(signals: list[Signal]) -> dict[str, str]:
+    # The runner writes exactly one row per key, so duplicates shouldn't occur; this is a
+    # defensive tie-break for when they do: highest confidence wins, later row wins ties.
+    best: dict[str, Signal] = {}
+    for s in signals:
+        prior = best.get(s.key)
+        if prior is None or s.confidence >= prior.confidence:
+            best[s.key] = s
+    return {k: s.value for k, s in best.items()}
+
+
 def build_facts(
     lead: Lead, contacts: list[Contact], signals: list[Signal], industry: Industry
 ) -> LeadFacts:
-    sig = {s.key: s.value for s in signals}
+    sig = _resolve_signals(signals)
     tags = lead.osm_tags or {}
     owner_name_found = bool(sig.get("owner_name"))
     family_owned = _bool(sig.get("family_owned")) or False
