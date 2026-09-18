@@ -1,0 +1,21 @@
+name: deploy
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+concurrency: { group: deploy, cancel-in-progress: false }
+jobs:
+  api:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy ${{ github.event.workflow_run.head_sha }} to the Ubuntu VM
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 15m
+          script: /opt/squatchscout/deploy/deploy.sh ${{ github.event.workflow_run.head_sha }}
