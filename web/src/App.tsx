@@ -1,113 +1,54 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import viteLogo from './assets/vite.svg'
+import { useState } from "react";
+import { AttributionFooter } from "./components/AttributionFooter";
+import { EmptyState } from "./components/EmptyState";
+import { SearchBar } from "./components/SearchBar";
+import { StatusStrip } from "./components/StatusStrip";
+import { APP_NAME } from "./config";
+import { useBootstrap } from "./hooks/useBootstrap";
+import { rankedLeads } from "./state/searchReducer";
+import { useSearchSession } from "./state/useSearchSession";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const boot = useBootstrap();
+  const session = useSearchSession();
+  const [exampleText, setExampleText] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const { state } = session;
+  const ranked = rankedLeads(state);
+  const busy = state.phase === "starting" || state.phase === "streaming";
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="flex min-h-screen flex-col">
+      <header className="flex items-center justify-between border-b border-border px-4 py-3">
+        <div className="flex items-baseline gap-2">
+          <span className="bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-lg font-bold text-transparent">{APP_NAME}</span>
+          <span className="text-xs text-muted">ranked · verified · explained</span>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        {boot.apiDown && (
+          <button onClick={boot.retry} className="rounded-md border border-tier-c/50 px-2 py-1 text-xs text-tier-c">API unreachable — retry</button>
+        )}
+      </header>
+      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 px-4 py-6">
+        <SearchBar key={exampleText ?? "bar"} industries={boot.industries} llmEnabled={boot.llmEnabled} busy={busy}
+          initialText={exampleText ?? undefined}
+          onSubmit={(body, preset) => { if (preset) session.applyPreset(preset); void session.start(body); }} />
+        <StatusStrip phase={state.phase} status={state.status} found={ranked.length} llmPending={state.llmPending} error={state.error} />
+        {state.phase === "idle" ? (
+          <EmptyState llmEnabled={boot.llmEnabled} onExample={(t) => setExampleText(t)} />
+        ) : (
+          <ol className="card divide-y divide-border">
+            {ranked.map((l) => (
+              <li key={l.id}>
+                <button type="button" onClick={() => setOpenId(l.id)} aria-pressed={openId === l.id}
+                  className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-surface-2 ${openId === l.id ? "bg-surface-2" : ""}`}>
+                  <span>{l.display_name}</span><span className="tabular-nums">{l.computedScore} · {l.computedTier}</span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        )}
+      </main>
+      <AttributionFooter version={boot.version} llmEnabled={boot.llmEnabled} />
+    </div>
+  );
 }
-
-export default App
