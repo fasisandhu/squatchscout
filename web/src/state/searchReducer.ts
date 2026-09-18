@@ -33,7 +33,7 @@ export type SessionAction =
   | { type: "reset" };
 
 export const initialState: SessionState = {
-  searchId: null, phase: "idle", status: null, leads: {}, order: [], weights: WEIGHT_PRESETS.balanced,
+  searchId: null, phase: "idle", status: null, leads: {}, order: [], weights: { ...WEIGHT_PRESETS.balanced },
   preset: "balanced", selected: [], llmPending: 0, error: null,
 };
 
@@ -55,13 +55,15 @@ export function reducer(state: SessionState, action: SessionAction): SessionStat
       return { ...state, leads: { ...state.leads, [lead_id]: { ...cur, ...rest } } };
     }
     case "leads_replaced": {
-      const leads = Object.fromEntries(action.leads.map((l) => [l.id, l]));
-      return { ...state, leads, order: action.leads.map((l) => l.id) };
+      const leads: Record<string, Lead> = Object.fromEntries(action.leads.map((l) => [l.id, l]));
+      return { ...state, leads, order: action.leads.map((l) => l.id), selected: state.selected.filter((id) => id in leads) };
     }
     case "done":
+      if (state.phase === "error") return state;
       return { ...state, llmPending: action.llm_pending, phase: action.llm_pending > 0 ? "refining" : "done" };
     case "llm_pending":
-      return { ...state, llmPending: action.n, phase: action.n > 0 && state.phase !== "error" ? "refining" : state.phase === "refining" ? "done" : state.phase };
+      if (state.phase !== "refining") return state;
+      return { ...state, llmPending: action.n, phase: action.n > 0 ? "refining" : "done" };
     case "error":
       return { ...state, phase: "error", error: action.message };
     case "set_weights":
