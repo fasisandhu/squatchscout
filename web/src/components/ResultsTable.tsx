@@ -25,7 +25,7 @@ export function ResultsTable({ leads, selected, onToggle, onSelectAll, onClear, 
         ref={(el) => { if (el) el.indeterminate = someSelected; }}
         onChange={() => (allSelected ? onClear() : onSelectAll())} />,
       cell: ({ row }) => <input type="checkbox" aria-label={`Select ${row.original.display_name}`} checked={selected.includes(row.original.id)}
-        onChange={() => onToggle(row.original.id)} onClick={(e) => e.stopPropagation()} /> },
+        onChange={() => onToggle(row.original.id)} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} /> },
     { id: "computedScore", accessorKey: "computedScore", header: "Score", size: 90,
       cell: ({ row }) => <ScoreChip score={row.original.computedScore} tier={row.original.computedTier} size="sm" /> },
     { id: "name", accessorKey: "display_name", header: "Business",
@@ -41,7 +41,7 @@ export function ResultsTable({ leads, selected, onToggle, onSelectAll, onClear, 
                 : <Badge title="Single independent listing"><Store className="size-3" /> independent</Badge>}
               {l.enrichment_status === "no_website" && <Badge title="No website found — high digital upside">no website</Badge>}
               {(l.enrichment_status === "unreachable" || l.enrichment_status === "blocked_by_robots") &&
-                <Badge tone="warn" title={l.enrichment_status === "blocked_by_robots" ? "Site's robots.txt disallows crawling" : "Website did not respond"}><ShieldAlert className="size-3" /> {l.enrichment_status.replace("_", " ")}</Badge>}
+                <Badge tone="warn" title={l.enrichment_status === "blocked_by_robots" ? "Site's robots.txt disallows crawling" : "Website did not respond"}><ShieldAlert className="size-3" /> {l.enrichment_status.replaceAll("_", " ")}</Badge>}
               {l.llm_status === "done" && <Badge title="Refined with AI extraction"><Sparkles className="size-3 text-accent" /> refined</Badge>}
             </div>
           </div>
@@ -81,7 +81,7 @@ export function ResultsTable({ leads, selected, onToggle, onSelectAll, onClear, 
         <tbody>
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id} tabIndex={0} onClick={() => onOpen(row.original.id)}
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(row.original.id); } }}
+              onKeyDown={(e) => { if (e.target !== e.currentTarget) return; if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(row.original.id); } }}
               className="cursor-pointer border-b border-border/60 hover:bg-surface-2 focus:bg-surface-2 focus:outline-none">
               {row.getVisibleCells().map((cell) => <td key={cell.id} className="px-3 py-2 align-top">{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>)}
             </tr>
