@@ -40,7 +40,14 @@ class LLMPool:
         return (len(system) + len(user)) // 4 + max_tokens
 
     async def _call(
-        self, model: str, system: str, user: str, schema_name: str, schema: dict, max_tokens: int
+        self,
+        model: str,
+        system: str,
+        user: str,
+        schema_name: str,
+        schema: dict,
+        max_tokens: int,
+        temperature: float,
     ) -> str:
         resp = await self._client.chat.completions.create(
             model=model,
@@ -53,6 +60,10 @@ class LLMPool:
                 "json_schema": {"name": schema_name, "strict": True, "schema": schema},
             },
             max_completion_tokens=max_tokens,
+            # These calls read facts off a page; sampling only adds variance. Without this
+            # the extraction eval was not reproducible run to run, which made it useless for
+            # judging a prompt change.
+            temperature=temperature,
         )
         return resp.choices[0].message.content or ""
 
@@ -64,6 +75,7 @@ class LLMPool:
         system: str,
         user: str,
         max_tokens: int = 300,
+        temperature: float = 0.0,
     ) -> tuple[dict | None, LLMStatus]:
         if not self.enabled or not self.models:
             return None, "disabled"
@@ -75,7 +87,9 @@ class LLMPool:
                 await self._buckets[model].acquire(est)
                 try:
                     self._used_today += 1
-                    content = await self._call(model, system, user, schema_name, schema, max_tokens)
+                    content = await self._call(
+                        model, system, user, schema_name, schema, max_tokens, temperature
+                    )
                     return json.loads(content), "ok"
                 except groq.RateLimitError as e:
                     if attempt == 0:

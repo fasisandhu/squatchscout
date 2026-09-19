@@ -27,11 +27,12 @@ class FakeGroq:
     """Scripted responses per model: list of callables returning content or raising."""
 
     def __init__(self, script: dict[str, list]):
-        self.script, self.calls = script, []
+        self.script, self.calls, self.kwargs = script, [], []
         self.chat = SimpleNamespace(completions=SimpleNamespace(create=self._create))
 
-    async def _create(self, *, model, messages, response_format, max_completion_tokens):
+    async def _create(self, *, model, messages, response_format, max_completion_tokens, **kw):
         self.calls.append(model)
+        self.kwargs.append(kw)
         step = self.script[model].pop(0)
         if isinstance(step, Exception):
             raise step
@@ -139,3 +140,14 @@ async def test_non_numeric_retry_after_uses_default_wait():
         schema_name="o", schema=OPENER_SCHEMA, system="s", user="u"
     )
     assert status == "ok" and data == {"opener": "hi"} and waits == [2.0]
+
+
+async def test_extraction_is_requested_deterministically():
+    """Fact extraction must not sample: the eval has to be reproducible run to run."""
+    fake = FakeGroq({"m1": ['{"ok": true}']})
+    pool = LLMPool(settings(), groq_client=fake, sleep=fast_sleep)
+    data, status = await pool.complete_json(
+        schema_name="extraction", schema={}, system="s", user="u"
+    )
+    assert (data, status) == ({"ok": True}, "ok")
+    assert fake.kwargs[0]["temperature"] == 0.0
