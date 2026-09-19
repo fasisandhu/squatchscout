@@ -1,0 +1,10 @@
+# Environment for notebooks/demo.ipynb. Deliberately separate from the API's own
+# dependencies: this is an API client, not part of the service.
+#   python -m venv notebooks/.venv
+#   notebooks/.venv/Scripts/pip install -r notebooks/requirements.txt   # Scripts -> bin on POSIX
+#   notebooks/.venv/Scripts/jupyter lab notebooks/demo.ipynb
+pandas~=2.3
+matplotlib~=3.10
+httpx~=0.28
+jupyter~=1.1
+nbconvert~=7.16
