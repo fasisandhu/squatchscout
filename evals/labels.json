@@ -1,0 +1,100 @@
+{
+  "_about": "Hand-labelled ground truth. README.md in this folder states the exact question each field answers and how the pages were chosen. Pages were fetched on 2026-09-19 and are stored verbatim in golden/ so the numbers stay reproducible.",
+
+  "a-better-auto-repair": {
+    "url": "https://abetterautorepair.wixsite.com/a-better-auto-repair",
+    "osm_name": "A Better Auto Repair", "industry": "auto_repair", "country": "US",
+    "founded_year": null, "owner_operated": null, "family_owned": null, "is_chain": false,
+    "note": "Wix site. One Garden City ID address, no ownership or founding statement anywhere."
+  },
+  "animal-hospital-signal-mtn": {
+    "url": "https://www.animalhospitalsm.net/",
+    "osm_name": "Animal Hospital of Signal Mountain", "industry": "veterinary", "country": "US",
+    "founded_year": 1989, "owner_operated": null, "family_owned": null, "is_chain": false,
+    "note": "Pets that we have cared for since 1989 is the practice speaking about itself."
+  },
+  "blue-wrench": {
+    "url": "https://bluewrench.com/",
+    "osm_name": "Blue Wrench", "industry": "auto_repair", "country": "US",
+    "founded_year": 1989, "owner_operated": null, "family_owned": null, "is_chain": true,
+    "note": "Serving drivers since 1989. Two locations, Garden City and Meridian."
+  },
+  "castle-dental": {
+    "url": "https://www.castledental.com/dentist-near-me/austin-dentist/",
+    "osm_name": "Castle Dental", "industry": "dentist", "country": "US",
+    "founded_year": null, "owner_operated": false, "family_owned": false, "is_chain": true,
+    "note": "National dental brand. OSM carries brand=Castle Dental and the page says services, hours and insurance plans vary by location. A corporate brand is positive evidence against owner-operated and family-owned, so those are false rather than null."
+  },
+  "cat-clinic-chattanooga": {
+    "url": "http://www.chattcatvet.com/",
+    "osm_name": "Cat Clinic Chattanooga", "industry": "veterinary", "country": "US",
+    "founded_year": null, "owner_operated": null, "family_owned": null, "is_chain": false,
+    "note": "One Cherokee Blvd location. The phrase about cat owners refers to clients, not ownership."
+  },
+  "gary-wilbert-roofing": {
+    "url": "https://garywilbertroofing.com",
+    "osm_name": "Gary Wilbert Roofing", "industry": "roofer", "country": "US",
+    "founded_year": null, "owner_operated": null, "family_owned": null, "is_chain": null,
+    "note": "Deliberate negative control: a parked Coming Soon page with 50 characters of text. Every field is null, so any non-null answer here is a hallucination."
+  },
+  "germanstar-auto": {
+    "url": "https://boisemercedesrepair.squarespace.com/",
+    "osm_name": "Germanstar Auto Repair", "industry": "auto_repair", "country": "US",
+    "founded_year": null, "owner_operated": null, "family_owned": null, "is_chain": false,
+    "note": "Squarespace site, 402 characters of text: hours, one address, phone, email. This is the page whose empty meta description exposed the crawler bug fixed in commit c5cae29."
+  },
+  "hurless-brothers": {
+    "url": "https://hurlessbros.com/",
+    "osm_name": "Hurless Brothers Foreign Car Service", "industry": "auto_repair", "country": "US",
+    "founded_year": null, "owner_operated": true, "family_owned": false, "is_chain": false,
+    "note": "Hard case. Brett and Todd Hurless write that they are handing the shop over, and Nick Tomanelli and Justin Van Wey introduce themselves as the new owners. Owner-operated is true, family-owned is false despite Brothers in the name. The page says four decades and 40 years but never a 4-digit founding year."
+  },
+  "kc-dental": {
+    "url": "https://www.kcdentalaustin.com/",
+    "osm_name": "KC Dental", "industry": "dentist", "country": "US",
+    "founded_year": 2006, "owner_operated": true, "family_owned": null, "is_chain": false,
+    "note": "KC Dental was founded in July 2006, and she returned to Austin in 2006 and established KC Dental. Family and Cosmetic Dentistry names the services, not the ownership, so family_owned stays null. The 1998 on the page is a graduation year."
+  },
+  "kunik-orthodontics": {
+    "url": "https://www.kunikorthodontics.com/",
+    "osm_name": "Kunik Orthodontics", "industry": "dentist", "country": "US",
+    "founded_year": 1991, "owner_operated": true, "family_owned": null, "is_chain": true,
+    "note": "Creating beautiful smiles since 1991. Eponymous practice with Dr. Kunik treating patients. Three Austin locations."
+  },
+  "mountain-view-service": {
+    "url": "https://www.mountainviewservicecar.com/",
+    "osm_name": "Mountain View Service", "industry": "auto_repair", "country": "US",
+    "founded_year": null, "owner_operated": true, "family_owned": null, "is_chain": false,
+    "note": "Trap. A customer review says they have been taking vehicles here since 1988, which is the reviewer's own tenure and not a founding date, so founded_year is null. The same review states that Mike, the owner, is a knowledgeable mechanic, which is a direct claim about the business, so owner_operated is true."
+  },
+  "plunger-plumber": {
+    "url": "https://plungerplumberllc.com",
+    "osm_name": "Plunger Plumber", "industry": "plumber", "country": "US",
+    "founded_year": null, "owner_operated": true, "family_owned": true, "is_chain": false,
+    "note": "A family-owned plumbing business that has served northeast Ohio for more than two decades. Family-owned, but no year given."
+  },
+  "red-bank-animal-hospital": {
+    "url": "http://redbankah.com/",
+    "osm_name": "Red Bank Animal Hospital", "industry": "veterinary", "country": "US",
+    "founded_year": null, "owner_operated": null, "family_owned": null, "is_chain": false,
+    "note": "One Dayton Blvd location, no ownership or founding statement."
+  },
+  "sonrisas-dental": {
+    "url": "https://sonrisasdentalcenter.com/",
+    "osm_name": "Sonrisas Dental Center", "industry": "dentist", "country": "US",
+    "founded_year": null, "owner_operated": null, "family_owned": null, "is_chain": true,
+    "note": "Three Central Texas offices, advertised as such. OSM carries no brand tag for it, so the dataset-level chain detector misses this one and the page-level answer is the only place it surfaces. Care for the whole family refers to patients, not ownership."
+  },
+  "tech-ridge-dental": {
+    "url": "https://www.techridgedental.com/",
+    "osm_name": "Tech Ridge Dental", "industry": "dentist", "country": "US",
+    "founded_year": 2011, "owner_operated": true, "family_owned": true, "is_chain": false,
+    "note": "The title and meta description carry the facts the body text never states: Tech Ridge Dental: Serving Austin since 2011, and a local, family-owned dental office serving the Austin community since 2011. A review separately says the writer has been going since 2016, which is their own tenure; the correct answer is 2011, not 2016. This page is also a worked example of why the labels were re-checked against title and meta rather than visible text alone."
+  },
+  "wizard-auto-specialties": {
+    "url": "https://www.wizardautospecialties.com/",
+    "osm_name": "Wizard Auto Specialties", "industry": "auto_repair", "country": "US",
+    "founded_year": 1987, "owner_operated": true, "family_owned": true, "is_chain": false,
+    "note": "Owner Greg Dill incorporated in 1987, serving the area since 1987, son Chris Dill joined in 2002, locally owned and operated. Father and son, one location."
+  }
+}

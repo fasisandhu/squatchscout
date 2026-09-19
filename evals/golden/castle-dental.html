@@ -1,0 +1,956 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script>if(navigator.userAgent.match(/MSIE|Internet Explorer/i)||navigator.userAgent.match(/Trident\/7\..*?rv:11/i)){var href=document.location.href;if(!href.match(/[?&]nowprocket/)){if(href.indexOf("?")==-1){if(href.indexOf("#")==-1){document.location.href=href+"?nowprocket=1"}else{document.location.href=href.replace("#","?nowprocket=1#")}}else{if(href.indexOf("#")==-1){document.location.href=href+"&nowprocket=1"}else{document.location.href=href.replace("#","&nowprocket=1#")}}}}</script><script>(()=>{class RocketLazyLoadScripts{constructor(){this.v="2.0.4",this.userEvents=["keydown","keyup","mousedown","mouseup","mousemove","mouseover","mouseout","touchmove","touchstart","touchend","touchcancel","wheel","click","dblclick","input"],this.attributeEvents=["onblur","onclick","oncontextmenu","ondblclick","onfocus","onmousedown","onmouseenter","onmouseleave","onmousemove","onmouseout","onmouseover","onmouseup","onmousewheel","onscroll","onsubmit"]}async t(){this.i(),this.o(),/iP(ad|hone)/.test(navigator.userAgent)&&this.h(),this.u(),this.l(this),this.m(),this.k(this),this.p(this),this._(),await Promise.all([this.R(),this.L()]),this.lastBreath=Date.now(),this.S(this),this.P(),this.D(),this.O(),this.M(),await this.C(this.delayedScripts.normal),await this.C(this.delayedScripts.defer),await this.C(this.delayedScripts.async),await this.T(),await this.F(),await this.j(),await this.A(),window.dispatchEvent(new Event("rocket-allScriptsLoaded")),this.everythingLoaded=!0,this.lastTouchEnd&&await new Promise(t=>setTimeout(t,500-Date.now()+this.lastTouchEnd)),this.I(),this.H(),this.U(),this.W()}i(){this.CSPIssue=sessionStorage.getItem("rocketCSPIssue"),document.addEventListener("securitypolicyviolation",t=>{this.CSPIssue||"script-src-elem"!==t.violatedDirective||"data"!==t.blockedURI||(this.CSPIssue=!0,sessionStorage.setItem("rocketCSPIssue",!0))},{isRocket:!0})}o(){window.addEventListener("pageshow",t=>{this.persisted=t.persisted,this.realWindowLoadedFired=!0},{isRocket:!0}),window.addEventListener("pagehide",()=>{this.onFirstUserAction=null},{isRocket:!0})}h(){let t;function e(e){t=e}window.addEventListener("touchstart",e,{isRocket:!0}),window.addEventListener("touchend",function i(o){o.changedTouches[0]&&t.changedTouches[0]&&Math.abs(o.changedTouches[0].pageX-t.changedTouches[0].pageX)<10&&Math.abs(o.changedTouches[0].pageY-t.changedTouches[0].pageY)<10&&o.timeStamp-t.timeStamp<200&&(window.removeEventListener("touchstart",e,{isRocket:!0}),window.removeEventListener("touchend",i,{isRocket:!0}),"INPUT"===o.target.tagName&&"text"===o.target.type||(o.target.dispatchEvent(new TouchEvent("touchend",{target:o.target,bubbles:!0})),o.target.dispatchEvent(new MouseEvent("mouseover",{target:o.target,bubbles:!0})),o.target.dispatchEvent(new PointerEvent("click",{target:o.target,bubbles:!0,cancelable:!0,detail:1,clientX:o.changedTouches[0].clientX,clientY:o.changedTouches[0].clientY})),event.preventDefault()))},{isRocket:!0})}q(t){this.userActionTriggered||("mousemove"!==t.type||this.firstMousemoveIgnored?"keyup"===t.type||"mouseover"===t.type||"mouseout"===t.type||(this.userActionTriggered=!0,this.onFirstUserAction&&this.onFirstUserAction()):this.firstMousemoveIgnored=!0),"click"===t.type&&t.preventDefault(),t.stopPropagation(),t.stopImmediatePropagation(),"touchstart"===this.lastEvent&&"touchend"===t.type&&(this.lastTouchEnd=Date.now()),"click"===t.type&&(this.lastTouchEnd=0),this.lastEvent=t.type,t.composedPath&&t.composedPath()[0].getRootNode()instanceof ShadowRoot&&(t.rocketTarget=t.composedPath()[0]),this.savedUserEvents.push(t)}u(){this.savedUserEvents=[],this.userEventHandler=this.q.bind(this),this.userEvents.forEach(t=>window.addEventListener(t,this.userEventHandler,{passive:!1,isRocket:!0})),document.addEventListener("visibilitychange",this.userEventHandler,{isRocket:!0})}U(){this.userEvents.forEach(t=>window.removeEventListener(t,this.userEventHandler,{passive:!1,isRocket:!0})),document.removeEventListener("visibilitychange",this.userEventHandler,{isRocket:!0}),this.savedUserEvents.forEach(t=>{(t.rocketTarget||t.target).dispatchEvent(new window[t.constructor.name](t.type,t))})}m(){const t="return false",e=Array.from(this.attributeEvents,t=>"data-rocket-"+t),i="["+this.attributeEvents.join("],[")+"]",o="[data-rocket-"+this.attributeEvents.join("],[data-rocket-")+"]",s=(e,i,o)=>{o&&o!==t&&(e.setAttribute("data-rocket-"+i,o),e["rocket"+i]=new Function("event",o),e.setAttribute(i,t))};new MutationObserver(t=>{for(const n of t)"attributes"===n.type&&(n.attributeName.startsWith("data-rocket-")||this.everythingLoaded?n.attributeName.startsWith("data-rocket-")&&this.everythingLoaded&&this.N(n.target,n.attributeName.substring(12)):s(n.target,n.attributeName,n.target.getAttribute(n.attributeName))),"childList"===n.type&&n.addedNodes.forEach(t=>{if(t.nodeType===Node.ELEMENT_NODE)if(this.everythingLoaded)for(const i of[t,...t.querySelectorAll(o)])for(const t of i.getAttributeNames())e.includes(t)&&this.N(i,t.substring(12));else for(const e of[t,...t.querySelectorAll(i)])for(const t of e.getAttributeNames())this.attributeEvents.includes(t)&&s(e,t,e.getAttribute(t))})}).observe(document,{subtree:!0,childList:!0,attributeFilter:[...this.attributeEvents,...e]})}I(){this.attributeEvents.forEach(t=>{document.querySelectorAll("[data-rocket-"+t+"]").forEach(e=>{this.N(e,t)})})}N(t,e){const i=t.getAttribute("data-rocket-"+e);i&&(t.setAttribute(e,i),t.removeAttribute("data-rocket-"+e))}k(t){Object.defineProperty(HTMLElement.prototype,"onclick",{get(){return this.rocketonclick||null},set(e){this.rocketonclick=e,this.setAttribute(t.everythingLoaded?"onclick":"data-rocket-onclick","this.rocketonclick(event)")}})}S(t){function e(e,i){let o=e[i];e[i]=null,Object.defineProperty(e,i,{get:()=>o,set(s){t.everythingLoaded?o=s:e["rocket"+i]=o=s}})}e(document,"onreadystatechange"),e(window,"onload"),e(window,"onpageshow");try{Object.defineProperty(document,"readyState",{get:()=>t.rocketReadyState,set(e){t.rocketReadyState=e},configurable:!0}),document.readyState="loading"}catch(t){console.log("WPRocket DJE readyState conflict, bypassing")}}l(t){this.originalAddEventListener=EventTarget.prototype.addEventListener,this.originalRemoveEventListener=EventTarget.prototype.removeEventListener,this.savedEventListeners=[],EventTarget.prototype.addEventListener=function(e,i,o){o&&o.isRocket||!t.B(e,this)&&!t.userEvents.includes(e)||t.B(e,this)&&!t.userActionTriggered||e.startsWith("rocket-")||t.everythingLoaded?t.originalAddEventListener.call(this,e,i,o):(t.savedEventListeners.push({target:this,remove:!1,type:e,func:i,options:o}),"mouseenter"!==e&&"mouseleave"!==e||t.originalAddEventListener.call(this,e,t.savedUserEvents.push,o))},EventTarget.prototype.removeEventListener=function(e,i,o){o&&o.isRocket||!t.B(e,this)&&!t.userEvents.includes(e)||t.B(e,this)&&!t.userActionTriggered||e.startsWith("rocket-")||t.everythingLoaded?t.originalRemoveEventListener.call(this,e,i,o):t.savedEventListeners.push({target:this,remove:!0,type:e,func:i,options:o})}}J(t,e){this.savedEventListeners=this.savedEventListeners.filter(i=>{let o=i.type,s=i.target||window;return e!==o||t!==s||(this.B(o,s)&&(i.type="rocket-"+o),this.$(i),!1)})}H(){EventTarget.prototype.addEventListener=this.originalAddEventListener,EventTarget.prototype.removeEventListener=this.originalRemoveEventListener,this.savedEventListeners.forEach(t=>this.$(t))}$(t){t.remove?this.originalRemoveEventListener.call(t.target,t.type,t.func,t.options):this.originalAddEventListener.call(t.target,t.type,t.func,t.options)}p(t){let e;function i(e){return t.everythingLoaded?e:e.split(" ").map(t=>"load"===t||t.startsWith("load.")?"rocket-jquery-load":t).join(" ")}function o(o){function s(e){const s=o.fn[e];o.fn[e]=o.fn.init.prototype[e]=function(){return this[0]===window&&t.userActionTriggered&&("string"==typeof arguments[0]||arguments[0]instanceof String?arguments[0]=i(arguments[0]):"object"==typeof arguments[0]&&Object.keys(arguments[0]).forEach(t=>{const e=arguments[0][t];delete arguments[0][t],arguments[0][i(t)]=e})),s.apply(this,arguments),this}}if(o&&o.fn&&!t.allJQueries.includes(o)){const e={DOMContentLoaded:[],"rocket-DOMContentLoaded":[]};for(const t in e)document.addEventListener(t,()=>{e[t].forEach(t=>t())},{isRocket:!0});o.fn.ready=o.fn.init.prototype.ready=function(i){function s(){parseInt(o.fn.jquery)>2?setTimeout(()=>i.bind(document)(o)):i.bind(document)(o)}return"function"==typeof i&&(t.realDomReadyFired?!t.userActionTriggered||t.fauxDomReadyFired?s():e["rocket-DOMContentLoaded"].push(s):e.DOMContentLoaded.push(s)),o([])},s("on"),s("one"),s("off"),t.allJQueries.push(o)}e=o}t.allJQueries=[],o(window.jQuery),Object.defineProperty(window,"jQuery",{get:()=>e,set(t){o(t)}})}P(){const t=new Map;document.write=document.writeln=function(e){const i=document.currentScript,o=document.createRange(),s=i.parentElement;let n=t.get(i);void 0===n&&(n=i.nextSibling,t.set(i,n));const c=document.createDocumentFragment();o.setStart(c,0),c.appendChild(o.createContextualFragment(e)),s.insertBefore(c,n)}}async R(){return new Promise(t=>{this.userActionTriggered?t():this.onFirstUserAction=t})}async L(){return new Promise(t=>{document.addEventListener("DOMContentLoaded",()=>{this.realDomReadyFired=!0,t()},{isRocket:!0})})}async j(){return this.realWindowLoadedFired?Promise.resolve():new Promise(t=>{window.addEventListener("load",t,{isRocket:!0})})}M(){this.pendingScripts=[];this.scriptsMutationObserver=new MutationObserver(t=>{for(const e of t)e.addedNodes.forEach(t=>{"SCRIPT"!==t.tagName||t.noModule||t.isWPRocket||this.pendingScripts.push({script:t,promise:new Promise(e=>{const i=()=>{const i=this.pendingScripts.findIndex(e=>e.script===t);i>=0&&this.pendingScripts.splice(i,1),e()};t.addEventListener("load",i,{isRocket:!0}),t.addEventListener("error",i,{isRocket:!0}),setTimeout(i,1e3)})})})}),this.scriptsMutationObserver.observe(document,{childList:!0,subtree:!0})}async F(){await this.X(),this.pendingScripts.length?(await this.pendingScripts[0].promise,await this.F()):this.scriptsMutationObserver.disconnect()}D(){this.delayedScripts={normal:[],async:[],defer:[]},document.querySelectorAll("script[type$=rocketlazyloadscript]").forEach(t=>{t.hasAttribute("data-rocket-src")?t.hasAttribute("async")&&!1!==t.async?this.delayedScripts.async.push(t):t.hasAttribute("defer")&&!1!==t.defer||"module"===t.getAttribute("data-rocket-type")?this.delayedScripts.defer.push(t):this.delayedScripts.normal.push(t):this.delayedScripts.normal.push(t)})}async _(){await this.L();let t=[];document.querySelectorAll("script[type$=rocketlazyloadscript][data-rocket-src]").forEach(e=>{let i=e.getAttribute("data-rocket-src");if(i&&!i.startsWith("data:")){i.startsWith("//")&&(i=location.protocol+i);try{const o=new URL(i).origin;o!==location.origin&&t.push({src:o,crossOrigin:e.crossOrigin||"module"===e.getAttribute("data-rocket-type")})}catch(t){}}}),t=[...new Map(t.map(t=>[JSON.stringify(t),t])).values()],this.Y(t,"preconnect")}async G(t){if(await this.K(),!0!==t.noModule||!("noModule"in HTMLScriptElement.prototype))return new Promise(e=>{let i;function o(){(i||t).setAttribute("data-rocket-status","executed"),e()}try{if(navigator.userAgent.includes("Firefox/")||""===navigator.vendor||this.CSPIssue)i=document.createElement("script"),[...t.attributes].forEach(t=>{let e=t.nodeName;"type"!==e&&("data-rocket-type"===e&&(e="type"),"data-rocket-src"===e&&(e="src"),i.setAttribute(e,t.nodeValue))}),t.text&&(i.text=t.text),t.nonce&&(i.nonce=t.nonce),i.hasAttribute("src")?(i.addEventListener("load",o,{isRocket:!0}),i.addEventListener("error",()=>{i.setAttribute("data-rocket-status","failed-network"),e()},{isRocket:!0}),setTimeout(()=>{i.isConnected||e()},1)):(i.text=t.text,o()),i.isWPRocket=!0,t.parentNode.replaceChild(i,t);else{const i=t.getAttribute("data-rocket-type"),s=t.getAttribute("data-rocket-src");i?(t.type=i,t.removeAttribute("data-rocket-type")):t.removeAttribute("type"),t.addEventListener("load",o,{isRocket:!0}),t.addEventListener("error",i=>{this.CSPIssue&&i.target.src.startsWith("data:")?(console.log("WPRocket: CSP fallback activated"),t.removeAttribute("src"),this.G(t).then(e)):(t.setAttribute("data-rocket-status","failed-network"),e())},{isRocket:!0}),s?(t.fetchPriority="high",t.removeAttribute("data-rocket-src"),t.src=s):t.src="data:text/javascript;base64,"+window.btoa(unescape(encodeURIComponent(t.text)))}}catch(i){t.setAttribute("data-rocket-status","failed-transform"),e()}});t.setAttribute("data-rocket-status","skipped")}async C(t){const e=t.shift();return e?(e.isConnected&&await this.G(e),this.C(t)):Promise.resolve()}O(){this.Y([...this.delayedScripts.normal,...this.delayedScripts.defer,...this.delayedScripts.async],"preload")}Y(t,e){this.trash=this.trash||[];let i=!0;var o=document.createDocumentFragment();t.forEach(t=>{const s=t.getAttribute&&t.getAttribute("data-rocket-src")||t.src;if(s&&!s.startsWith("data:")){const n=document.createElement("link");n.href=s,n.rel=e,"preconnect"!==e&&(n.as="script",n.fetchPriority=i?"high":"low"),t.getAttribute&&"module"===t.getAttribute("data-rocket-type")&&(n.crossOrigin=!0),t.crossOrigin&&(n.crossOrigin=t.crossOrigin),t.integrity&&(n.integrity=t.integrity),t.nonce&&(n.nonce=t.nonce),o.appendChild(n),this.trash.push(n),i=!1}}),document.head.appendChild(o)}W(){this.trash.forEach(t=>t.remove())}async T(){try{document.readyState="interactive"}catch(t){}this.fauxDomReadyFired=!0;try{await this.K(),this.J(document,"readystatechange"),document.dispatchEvent(new Event("rocket-readystatechange")),await this.K(),document.rocketonreadystatechange&&document.rocketonreadystatechange(),await this.K(),this.J(document,"DOMContentLoaded"),document.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this.K(),this.J(window,"DOMContentLoaded"),window.dispatchEvent(new Event("rocket-DOMContentLoaded"))}catch(t){console.error(t)}}async A(){try{document.readyState="complete"}catch(t){}try{await this.K(),this.J(document,"readystatechange"),document.dispatchEvent(new Event("rocket-readystatechange")),await this.K(),document.rocketonreadystatechange&&document.rocketonreadystatechange(),await this.K(),this.J(window,"load"),window.dispatchEvent(new Event("rocket-load")),await this.K(),window.rocketonload&&window.rocketonload(),await this.K(),this.allJQueries.forEach(t=>t(window).trigger("rocket-jquery-load")),await this.K(),this.J(window,"pageshow");const t=new Event("rocket-pageshow");t.persisted=this.persisted,window.dispatchEvent(t),await this.K(),window.rocketonpageshow&&window.rocketonpageshow({persisted:this.persisted})}catch(t){console.error(t)}}async K(){Date.now()-this.lastBreath>45&&(await this.X(),this.lastBreath=Date.now())}async X(){return document.hidden?new Promise(t=>setTimeout(t)):new Promise(t=>requestAnimationFrame(t))}B(t,e){return e===document&&"readystatechange"===t||(e===document&&"DOMContentLoaded"===t||(e===window&&"DOMContentLoaded"===t||(e===window&&"load"===t||e===window&&"pageshow"===t)))}static run(){(new RocketLazyLoadScripts).t()}}RocketLazyLoadScripts.run()})();</script>
+	
+	
+
+	<meta name="viewport" content="width=device-width">
+
+
+	<meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
+
+	<!-- This site is optimized with the Yoast SEO plugin v26.5 - https://yoast.com/wordpress/plugins/seo/ -->
+	<title>Affordable  Dentist in  at  |</title>
+<link data-rocket-prefetch href="https://cdn.cookielaw.org" rel="dns-prefetch">
+<link data-rocket-prefetch href="https://maps.googleapis.com" rel="dns-prefetch">
+<link crossorigin data-rocket-preload as="font" href="https://www.castledental.com/wp-content/themes/smile-brands-core/fonts/BrandonTextWebRegular/font.woff2" rel="preload">
+<link crossorigin data-rocket-preload as="font" href="https://www.castledental.com/wp-content/themes/smile-brands-core/fonts/BrandonGrotesque/normal_normal_normal.woff2" rel="preload"><link rel="preload" data-rocket-preload as="image" href="https://www.castledental.com/wp-content/themes/smile-brands-core/images/castledental-logo.svg" fetchpriority="high">
+	<meta name="description" content="Experience exceptional and affordable dental care at our  ,  location. Schedule an appointment with our dental professionals." />
+	<link rel="canonical" href="https://www.castledental.com/dental-office/austin-dentist/35010/" />
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="Affordable  Dentist in  at  |" />
+	<meta property="og:description" content="Experience exceptional and affordable dental care at our  ,  location. Schedule an appointment with our dental professionals." />
+	<meta property="og:url" content="https://www.castledental.com/dental-office/austin-dentist/35010/" />
+	<meta property="og:site_name" content="Castle Dental &amp; Orthodontics" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":["WebPage","CollectionPage"],"@id":"https://www.castledental.com/blog/","url":"https://www.castledental.com/blog/","name":"Blog - Castle Dental &amp; Orthodontics","isPartOf":{"@id":"https://www.castledental.com/#website"},"datePublished":"2022-02-16T19:18:47+00:00","breadcrumb":{"@id":"https://www.castledental.com/blog/#breadcrumb"},"inLanguage":"en-US"},{"@type":"BreadcrumbList","@id":"https://www.castledental.com/blog/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.castledental.com/"},{"@type":"ListItem","position":2,"name":"Blog"}]},{"@type":"WebSite","@id":"https://www.castledental.com/#website","url":"https://www.castledental.com/","name":"Castle Dental &amp; Orthodontics","description":"For a healthy, beautiful smile - we&#039;re your go-to dentists","potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://www.castledental.com/?s={search_term_string}"},"query-input":{"@type":"PropertyValueSpecification","valueRequired":true,"valueName":"search_term_string"}}],"inLanguage":"en-US"}]}</script>
+	<!-- / Yoast SEO plugin. -->
+
+
+<link rel='dns-prefetch' href='//maps.googleapis.com' />
+
+<style id="wp-img-auto-sizes-contain-inline-css">
+img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
+/*# sourceURL=wp-img-auto-sizes-contain-inline-css */
+</style>
+<style id="classic-theme-styles-inline-css">
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+/*# sourceURL=/wp-includes/css/classic-themes.min.css */
+</style>
+
+<link rel='stylesheet' id='wp-components-css' href='https://www.castledental.com/wp-includes/css/dist/components/style.min.css?ver=7.0.5' media='all' />
+<link rel='stylesheet' id='wp-preferences-css' href='https://www.castledental.com/wp-includes/css/dist/preferences/style.min.css?ver=7.0.5' media='all' />
+<link rel='stylesheet' id='wp-block-editor-css' href='https://www.castledental.com/wp-includes/css/dist/block-editor/style.min.css?ver=7.0.5' media='all' />
+<link data-minify="1" rel='stylesheet' id='popup-maker-block-library-style-css' href='https://www.castledental.com/wp-content/cache/min/2/wp-content/plugins/popup-maker/dist/packages/block-library-style.css?ver=1782931461' media='all' />
+<style id="global-styles-inline-css">
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);}:where(body) { margin: 0; }:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}body{padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;}:root :where(.wp-element-button, .wp-block-button__link){background-color: #32373c;border-width: 0;color: #fff;font-family: inherit;font-size: inherit;font-style: inherit;font-weight: inherit;letter-spacing: inherit;line-height: inherit;padding-top: calc(0.667em + 2px);padding-right: calc(1.333em + 2px);padding-bottom: calc(0.667em + 2px);padding-left: calc(1.333em + 2px);text-decoration: none;text-transform: inherit;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+/*# sourceURL=global-styles-inline-css */
+</style>
+
+<link data-minify="1" rel='stylesheet' id='main-css' href='https://www.castledental.com/wp-content/cache/background-css/2/www.castledental.com/wp-content/cache/min/2/wp-content/themes/smile-brands-core/style.css?ver=1782931461&wpr_t=1789820697' media='all' />
+<style id="rocket-lazyload-inline-css">
+.rll-youtube-player{position:relative;padding-bottom:56.23%;height:0;overflow:hidden;max-width:100%;}.rll-youtube-player:focus-within{outline: 2px solid currentColor;outline-offset: 5px;}.rll-youtube-player iframe{position:absolute;top:0;left:0;width:100%;height:100%;z-index:100;background:0 0}.rll-youtube-player img{bottom:0;display:block;left:0;margin:auto;max-width:100%;width:100%;position:absolute;right:0;top:0;border:none;height:auto;-webkit-transition:.4s all;-moz-transition:.4s all;transition:.4s all}.rll-youtube-player img:hover{-webkit-filter:brightness(75%)}.rll-youtube-player .play{height:100%;width:100%;left:0;top:0;position:absolute;background:var(--wpr-bg-ed754e58-54a1-4d5e-a041-9ee464ef4831) no-repeat center;background-color: transparent !important;cursor:pointer;border:none;}
+/*# sourceURL=rocket-lazyload-inline-css */
+</style>
+<script type="rocketlazyloadscript" id="jquery-core-js" data-rocket-src="https://www.castledental.com/wp-includes/js/jquery/jquery.min.js?ver=3.7.1" data-rocket-defer defer></script>
+<script type="rocketlazyloadscript" id="jquery-migrate-js" data-rocket-src="https://www.castledental.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1" data-rocket-defer defer></script>
+<link rel="https://api.w.org/" href="https://www.castledental.com/wp-json/" /><link rel="icon" href="https://www.castledental.com/wp-content/uploads/sites/2/2023/03/favicon.png" sizes="32x32" />
+<link rel="icon" href="https://www.castledental.com/wp-content/uploads/sites/2/2023/03/favicon.png" sizes="192x192" />
+<link rel="apple-touch-icon" href="https://www.castledental.com/wp-content/uploads/sites/2/2023/03/favicon.png" />
+<meta name="msapplication-TileImage" content="https://www.castledental.com/wp-content/uploads/sites/2/2023/03/favicon.png" />
+<style id="wp-custom-css">
+/* Small Blue Divider Line */
+.blue-divider-line {
+    border-color: #4EBFEB;
+    opacity: .27;
+    width: 36px;
+    height: 2px;
+    display: block;
+    margin: 10px 0;
+}
+/*End*/
+
+/*Bulleted List Document Icon*/
+.content ul li.document-icons {
+	list-style-image: url('/wp-content/uploads/2022/06/document-icon.svg')
+}
+/* End */
+
+/* Landing Page Table */
+.implants-lp td {
+	padding:10px;
+	border-bottom:solid 1px
+}
+</style>
+<noscript><style id="rocket-lazyload-nojs-css">.rll-youtube-player, [data-lazy-src]{display:none !important;}</style></noscript>
+	<!-- OneTrust Cookies Consent Notice start for www.castledental.com -->
+<script type="text/javascript" src="https://cdn.cookielaw.org/consent/a257a2d0-1ae4-431a-8d58-b876ffdd6d5d/OtAutoBlock.js" ></script>
+<script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"  type="text/javascript" charset="UTF-8" data-domain-script="a257a2d0-1ae4-431a-8d58-b876ffdd6d5d" ></script>
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+function OptanonWrapper() { }
+</script>
+<!-- OneTrust Cookies Consent Notice end for www.castledental.com -->
+<script type="rocketlazyloadscript" data-rocket-src="https://cdn.userway.org/widget.js" data-account="6s3ceLDlQp" data-rocket-defer defer></script>
+<!-- Google Tag Manager -->
+<script type="rocketlazyloadscript">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.setAttribute('class','optanon-category-C0001');j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NZ8MH9J');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google tag (gtag.js) -->
+<script type="rocketlazyloadscript" async data-rocket-src="https://www.googletagmanager.com/gtag/js?id=G-4D5DW9N615"></script>
+<script type="rocketlazyloadscript">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4D5DW9N615');
+</script>
+	<script type="rocketlazyloadscript" async data-rocket-src="https://next-api.patientprism.com/v1/snippet/9a4c0e1b-36c6-47eb-b413-119266a48d52"></script>
+	<style>
+		
+		
+	</style>
+	
+<style id="rocket-lazyrender-inline-css">[data-wpr-lazyrender] {content-visibility: auto;}</style><style id="wpr-lazyload-bg-container"></style><style id="wpr-lazyload-bg-exclusion"></style>
+<noscript>
+<style id="wpr-lazyload-bg-nostyle">.large-button.blue div{--wpr-bg-f402d8a8-301e-4f10-89c0-06003185d2b2: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/cta-arrow.svg');}.columns{--wpr-bg-760ee612-e8e0-498a-9b7d-865f9282b848: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/columns.svg');}.testimonial.bg-light-orange .circle{--wpr-bg-09ff3c2c-3df7-4d84-867c-d79170e445d0: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/light-yellow-circle.svg');}.testimonial .container .circle{--wpr-bg-8f76485b-b6c0-4538-83c0-d60cf8914e8b: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/yellow-circle.svg');}.faqs{--wpr-bg-689df48c-c61c-4d5c-8fb2-3e563d53750e: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/faqs-bg.svg');}.faqs .container:before,.faqs .container:after{--wpr-bg-0fda00d8-2308-49fc-94f9-2dffbf30e45a: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/faq-dots.svg');}.appointment .step .field input[type=date].appointment-date-picker{--wpr-bg-880cc48f-280e-4106-be3c-fe0e147f486e: url('https://www.castledental.com/wp-content/themes/smile-brands-core/landing-page/images/calendar.svg');}.appointment .step .appointment-selector .day-container .bx-controls-direction a,.appointment .step .appointment-selector-reschedule .day-container .bx-controls-direction a{--wpr-bg-3678a55e-cf7a-4dd8-b40f-bf4bb2773f21: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/blue-arrow.svg');}.appointment .step .actions button.back:before{--wpr-bg-bca76dbc-635b-42c0-a2e2-3d3e72dcf92d: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/arrow.svg');}.appointment .step .actions button.next:after{--wpr-bg-1295d899-c499-4ce4-bd2f-406599c4ab0e: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/arrow.svg');}.offer-block{--wpr-bg-b5df8e28-5ce4-4a2e-a738-d0ff7561fa30: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/offer-bg.svg');}.offer-block .circle{--wpr-bg-f829fa76-f4be-4fa8-8f6d-4ad3377f181c: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/yellow-circle.svg');}.regional-content .reviews .review .stars{--wpr-bg-4c42c5f8-7166-4510-85b5-4ff1894eda7e: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/star-yellow.svg');}.lp-columns:before{--wpr-bg-92aaba24-1929-4c0c-a613-a04dd6b1dff2: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/dot-circle.svg');}.office-reviews .stars{--wpr-bg-01c0d3e8-dd28-4f48-b487-2cee26e891cd: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/star-yellow.svg');}.office-ratings .rating-overview .stars{--wpr-bg-9ee18d1c-b5c0-4dc9-9317-b965bff3e621: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/star.svg');}.office-ratings .reviews .review .stars{--wpr-bg-f440d49a-8d5b-4f09-8600-a48e2424d9ea: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/star-yellow.svg');}.large-button.pin:before{--wpr-bg-6a0e1896-eae7-4845-8ab1-7453c09eb7de: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/marker.svg');}.large-button.clock:before{--wpr-bg-8292ec34-6d67-481d-a55e-36ce18b0b06b: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/clock.svg');}.hero .image:before{--wpr-bg-4045ff1d-4ef0-4768-8250-bd624d41133f: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/hero-blob-orange.svg');}.hero .image:after{--wpr-bg-c7619e5e-9c95-40ae-afbe-f3aaee5e74bd: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/hero-blob-pink.svg');}.image-callout .image:before{--wpr-bg-97ab29ad-578a-4679-8bcd-85967b1f8ecb: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/hero-blob-orange.svg');}.image-callout .image:after{--wpr-bg-cb4c93b2-0427-4dc7-856f-36663f3014d2: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/hero-blob-pink.svg');}.office-search-form .inputs .get-user-location{--wpr-bg-f6ce9a02-c4b8-40a7-82ff-8062a95bc316: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/compass.svg');}.office-search-form .inputs .get-user-location.active{--wpr-bg-23324349-cc87-477d-927c-4742ad0b9e88: url('https://www.castledental.com/wp-content/themes/smile-brands-core/images/spinner.svg');}.rll-youtube-player .play{--wpr-bg-ed754e58-54a1-4d5e-a041-9ee464ef4831: url('https://www.castledental.com/wp-content/plugins/wp-rocket/assets/img/youtube.png');}</style>
+</noscript>
+<script type="application/javascript">const rocket_pairs = [{"selector":".large-button.blue div","style":".large-button.blue div{--wpr-bg-f402d8a8-301e-4f10-89c0-06003185d2b2: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/cta-arrow.svg');}","hash":"f402d8a8-301e-4f10-89c0-06003185d2b2","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/cta-arrow.svg"},{"selector":".columns","style":".columns{--wpr-bg-760ee612-e8e0-498a-9b7d-865f9282b848: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/columns.svg');}","hash":"760ee612-e8e0-498a-9b7d-865f9282b848","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/columns.svg"},{"selector":".testimonial.bg-light-orange .circle","style":".testimonial.bg-light-orange .circle{--wpr-bg-09ff3c2c-3df7-4d84-867c-d79170e445d0: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/light-yellow-circle.svg');}","hash":"09ff3c2c-3df7-4d84-867c-d79170e445d0","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/light-yellow-circle.svg"},{"selector":".testimonial .container .circle","style":".testimonial .container .circle{--wpr-bg-8f76485b-b6c0-4538-83c0-d60cf8914e8b: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/yellow-circle.svg');}","hash":"8f76485b-b6c0-4538-83c0-d60cf8914e8b","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/yellow-circle.svg"},{"selector":".faqs","style":".faqs{--wpr-bg-689df48c-c61c-4d5c-8fb2-3e563d53750e: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/faqs-bg.svg');}","hash":"689df48c-c61c-4d5c-8fb2-3e563d53750e","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/faqs-bg.svg"},{"selector":".faqs .container","style":".faqs .container:before,.faqs .container:after{--wpr-bg-0fda00d8-2308-49fc-94f9-2dffbf30e45a: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/faq-dots.svg');}","hash":"0fda00d8-2308-49fc-94f9-2dffbf30e45a","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/faq-dots.svg"},{"selector":".appointment .step .field input[type=date].appointment-date-picker","style":".appointment .step .field input[type=date].appointment-date-picker{--wpr-bg-880cc48f-280e-4106-be3c-fe0e147f486e: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/landing-page\/images\/calendar.svg');}","hash":"880cc48f-280e-4106-be3c-fe0e147f486e","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/landing-page\/images\/calendar.svg"},{"selector":".appointment .step .appointment-selector .day-container .bx-controls-direction a,.appointment .step .appointment-selector-reschedule .day-container .bx-controls-direction a","style":".appointment .step .appointment-selector .day-container .bx-controls-direction a,.appointment .step .appointment-selector-reschedule .day-container .bx-controls-direction a{--wpr-bg-3678a55e-cf7a-4dd8-b40f-bf4bb2773f21: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/blue-arrow.svg');}","hash":"3678a55e-cf7a-4dd8-b40f-bf4bb2773f21","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/blue-arrow.svg"},{"selector":".appointment .step .actions button.back","style":".appointment .step .actions button.back:before{--wpr-bg-bca76dbc-635b-42c0-a2e2-3d3e72dcf92d: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/arrow.svg');}","hash":"bca76dbc-635b-42c0-a2e2-3d3e72dcf92d","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/arrow.svg"},{"selector":".appointment .step .actions button.next","style":".appointment .step .actions button.next:after{--wpr-bg-1295d899-c499-4ce4-bd2f-406599c4ab0e: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/arrow.svg');}","hash":"1295d899-c499-4ce4-bd2f-406599c4ab0e","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/arrow.svg"},{"selector":".offer-block","style":".offer-block{--wpr-bg-b5df8e28-5ce4-4a2e-a738-d0ff7561fa30: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/offer-bg.svg');}","hash":"b5df8e28-5ce4-4a2e-a738-d0ff7561fa30","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/offer-bg.svg"},{"selector":".offer-block .circle","style":".offer-block .circle{--wpr-bg-f829fa76-f4be-4fa8-8f6d-4ad3377f181c: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/yellow-circle.svg');}","hash":"f829fa76-f4be-4fa8-8f6d-4ad3377f181c","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/yellow-circle.svg"},{"selector":".regional-content .reviews .review .stars","style":".regional-content .reviews .review .stars{--wpr-bg-4c42c5f8-7166-4510-85b5-4ff1894eda7e: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/star-yellow.svg');}","hash":"4c42c5f8-7166-4510-85b5-4ff1894eda7e","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/star-yellow.svg"},{"selector":".lp-columns","style":".lp-columns:before{--wpr-bg-92aaba24-1929-4c0c-a613-a04dd6b1dff2: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/dot-circle.svg');}","hash":"92aaba24-1929-4c0c-a613-a04dd6b1dff2","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/dot-circle.svg"},{"selector":".office-reviews .stars","style":".office-reviews .stars{--wpr-bg-01c0d3e8-dd28-4f48-b487-2cee26e891cd: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/star-yellow.svg');}","hash":"01c0d3e8-dd28-4f48-b487-2cee26e891cd","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/star-yellow.svg"},{"selector":".office-ratings .rating-overview .stars","style":".office-ratings .rating-overview .stars{--wpr-bg-9ee18d1c-b5c0-4dc9-9317-b965bff3e621: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/star.svg');}","hash":"9ee18d1c-b5c0-4dc9-9317-b965bff3e621","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/star.svg"},{"selector":".office-ratings .reviews .review .stars","style":".office-ratings .reviews .review .stars{--wpr-bg-f440d49a-8d5b-4f09-8600-a48e2424d9ea: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/star-yellow.svg');}","hash":"f440d49a-8d5b-4f09-8600-a48e2424d9ea","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/star-yellow.svg"},{"selector":".large-button.pin","style":".large-button.pin:before{--wpr-bg-6a0e1896-eae7-4845-8ab1-7453c09eb7de: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/marker.svg');}","hash":"6a0e1896-eae7-4845-8ab1-7453c09eb7de","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/marker.svg"},{"selector":".large-button.clock","style":".large-button.clock:before{--wpr-bg-8292ec34-6d67-481d-a55e-36ce18b0b06b: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/clock.svg');}","hash":"8292ec34-6d67-481d-a55e-36ce18b0b06b","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/clock.svg"},{"selector":".hero .image","style":".hero .image:before{--wpr-bg-4045ff1d-4ef0-4768-8250-bd624d41133f: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/hero-blob-orange.svg');}","hash":"4045ff1d-4ef0-4768-8250-bd624d41133f","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/hero-blob-orange.svg"},{"selector":".hero .image","style":".hero .image:after{--wpr-bg-c7619e5e-9c95-40ae-afbe-f3aaee5e74bd: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/hero-blob-pink.svg');}","hash":"c7619e5e-9c95-40ae-afbe-f3aaee5e74bd","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/hero-blob-pink.svg"},{"selector":".image-callout .image","style":".image-callout .image:before{--wpr-bg-97ab29ad-578a-4679-8bcd-85967b1f8ecb: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/hero-blob-orange.svg');}","hash":"97ab29ad-578a-4679-8bcd-85967b1f8ecb","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/hero-blob-orange.svg"},{"selector":".image-callout .image","style":".image-callout .image:after{--wpr-bg-cb4c93b2-0427-4dc7-856f-36663f3014d2: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/hero-blob-pink.svg');}","hash":"cb4c93b2-0427-4dc7-856f-36663f3014d2","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/hero-blob-pink.svg"},{"selector":".office-search-form .inputs .get-user-location","style":".office-search-form .inputs .get-user-location{--wpr-bg-f6ce9a02-c4b8-40a7-82ff-8062a95bc316: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/compass.svg');}","hash":"f6ce9a02-c4b8-40a7-82ff-8062a95bc316","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/compass.svg"},{"selector":".office-search-form .inputs .get-user-location.active","style":".office-search-form .inputs .get-user-location.active{--wpr-bg-23324349-cc87-477d-927c-4742ad0b9e88: url('https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/spinner.svg');}","hash":"23324349-cc87-477d-927c-4742ad0b9e88","url":"https:\/\/www.castledental.com\/wp-content\/themes\/smile-brands-core\/images\/spinner.svg"},{"selector":".rll-youtube-player .play","style":".rll-youtube-player .play{--wpr-bg-ed754e58-54a1-4d5e-a041-9ee464ef4831: url('https:\/\/www.castledental.com\/wp-content\/plugins\/wp-rocket\/assets\/img\/youtube.png');}","hash":"ed754e58-54a1-4d5e-a041-9ee464ef4831","url":"https:\/\/www.castledental.com\/wp-content\/plugins\/wp-rocket\/assets\/img\/youtube.png"}]; const rocket_excluded_pairs = [];</script></head>
+
+
+<body class="blog wp-theme-smile-brands-core ">
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NZ8MH9J"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<section  class="alerts">
+
+  
+  
+</section><!-- end office alerts -->
+<header  class="header">
+
+	<div  class="container">
+
+		<a href="https://www.castledental.com" class="logo"><img fetchpriority="high" src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/castledental-logo.svg" title="" alt="Brand Logo" width="340" height="85"></a>
+
+		<div  class="header-actions">
+
+			<div class="utility">
+
+				
+				<a href="tel:">Call </a>
+
+				<form action="https://www.castledental.com" class="searchform" method="get">
+	<input type="text" name="query" placeholder="Search..." />
+</form>
+			</div>
+		
+			<a class="menu-toggle" href="#">&#9776; Menu</a>
+
+			<nav class="nav"><ul id="menu-main-menu" class=""><li id="menu-item-68" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-68"><a href="https://www.castledental.com/dental-offices-near-me/">Find an Office</a>
+<ul class="sub-menu">
+	<li id="menu-item-10619" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-10619"><a href="https://www.castledental.com/dentist-near-me/find-office/state/tn/">Tennessee</a></li>
+	<li id="menu-item-10620" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-10620"><a href="https://www.castledental.com/dentist-near-me/find-office/state/tx/">Texas</a></li>
+</ul>
+</li>
+<li id="menu-item-9580" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9580"><a href="https://www.castledental.com/affordable-care/">Affordable Care</a></li>
+<li id="menu-item-10841" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-10841"><a href="https://www.brightnow.com/dental-office/-dentist//--dental-services">Services</a>
+<ul class="sub-menu">
+	<li id="menu-item-10842" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-10842"><a href="https://www.brightnow.com/dental-office/-dentist//general-dentistry-services-service--/">General Dentistry</a></li>
+	<li id="menu-item-10843" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-10843"><a href="https://www.brightnow.com/dental-office/-dentist//specialty-dentistry-service--/">Specialty Dentistry</a></li>
+	<li id="menu-item-10844" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-10844"><a href="https://www.brightnow.com/dental-office/-dentist//cosmetic-dental-care-service--/">Cosmetic Dentistry</a></li>
+</ul>
+</li>
+<li id="menu-item-9581" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9581"><a href="https://www.castledental.com/what-to-expect/">What to Expect</a></li>
+<li id="menu-item-10558" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-10558"><a href="https://smilebrands.com/careers/">Careers</a></li>
+</ul></nav>
+			
+			
+				<a href="https://www.castledental.com/appointment/?officeId=35010" class="button red" >Book Now</a>
+
+			
+		</div>
+
+	</div><!-- end container -->
+
+</header><!-- end header -->
+
+<div  class="mobile-nav-container">
+	
+	<a href="#" class="close">&times; Close</a>
+
+	<nav class="mobile-nav"><ul id="menu-main-menu-1" class=""><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-68"><a href="https://www.castledental.com/dental-offices-near-me/">Find an Office</a>
+<ul class="sub-menu">
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-10619"><a href="https://www.castledental.com/dentist-near-me/find-office/state/tn/">Tennessee</a></li>
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-10620"><a href="https://www.castledental.com/dentist-near-me/find-office/state/tx/">Texas</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9580"><a href="https://www.castledental.com/affordable-care/">Affordable Care</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-10841"><a href="https://www.brightnow.com/dental-office/-dentist//--dental-services">Services</a>
+<ul class="sub-menu">
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-10842"><a href="https://www.brightnow.com/dental-office/-dentist//general-dentistry-services-service--/">General Dentistry</a></li>
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-10843"><a href="https://www.brightnow.com/dental-office/-dentist//specialty-dentistry-service--/">Specialty Dentistry</a></li>
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-10844"><a href="https://www.brightnow.com/dental-office/-dentist//cosmetic-dental-care-service--/">Cosmetic Dentistry</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9581"><a href="https://www.castledental.com/what-to-expect/">What to Expect</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-10558"><a href="https://smilebrands.com/careers/">Careers</a></li>
+</ul></nav>
+	<div  class="header-actions">
+		
+		
+			<a href="tel:1-800-867-6453" class="phone">Call 1-800-867-6453</a>
+
+		
+		
+		
+			<a href="https://www.castledental.com/appointment/" class="button" target="">Book Now</a>
+
+		
+		<form action="https://www.castledental.com" class="searchform" method="get">
+	<input type="text" name="query" placeholder="Search..." />
+</form>
+	</div>
+
+</div>
+<main  id="main-content">
+<section  class="office-alerts container">
+
+  
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+</section><!-- end office alerts -->
+<section  class="office-details container">
+
+  <div  class="office-detail-box">
+
+    <h1 class="h2">
+
+            
+        Dentists in , 
+        
+    </h1>
+
+    <p></p>
+
+    <div class="contact-details">
+
+      <address><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 512"><g><path class="cls-1" d="M367.03,62.97C326.42,22.36,272.43,0,215,0S103.58,22.36,62.97,62.97C22.36,103.58,0,157.57,0,215c0,29.38,5.75,58.02,17.1,85.12s27.71,51.3,48.65,71.91l142.11,139.96h14.29l142.11-139.96c20.93-20.62,37.3-44.81,48.65-71.91,11.35-27.1,17.1-55.74,17.1-85.12,0-57.43-22.36-111.42-62.97-152.03ZM215,261c-30.33,0-55-24.67-55-55s24.67-55,55-55,55,24.67,55,55-24.67,55-55,55Z"/></g></svg><a href="" target="_blank">  | ,  </a></address>
+
+      <a href="tel:" class="phone"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384.72 445.31"><g><g><path d="M131,137.26c-3.36,3-13.11,11.85-20.57,18.42A18.38,18.38,0,0,0,104.79,174c12.75,50.8,45.13,101.4,88.48,130,5.12,3.37,15.07,9.63,24.17,14.76a20.06,20.06,0,0,0,22.78-2.17c4.84-4.09,9.9-8.32,12.8-10.47,0,0,21.28-19.84,38.22-9.94,21,12.27,111.66,62.12,90.23,101.1a52.35,52.35,0,0,1-13.68,16.39l-6,4.67c-6.89,5.39-14,11-20.84,16.58-9.58,7.86-21.16,11.23-35.43,10.29-1.25-.08-2.5-.2-3.75-.35-1-.11-1.92-.24-2.87-.36l-2.92-.37c-76.13-11.31-144.57-46.25-197.9-101S11.71,218.88,2.48,142.46A327.44,327.44,0,0,1,2.6,61,44.67,44.67,0,0,1,19.27,31Q23.14,28,27,25c6.08-4.72,14.48-10.73,20.32-15.74,0,0,26.62-20,46-1.12C110.53,24.94,164.33,107.73,131,137.26Z"/></g></g></svg></a>
+
+      <a href="#" class="launch-modal hours-link" data-modal-target="hours"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path d="M68,5A10,10,0,1,0,78,15,10,10,0,0,0,68,5Zm0,17.5A7.5,7.5,0,1,1,75.5,15,7.508,7.508,0,0,1,68,22.5Z" transform="translate(-58 -5)"/><path d="M75.012,18.75H73.125a.625.625,0,0,1-.625-.625V16.237A1.237,1.237,0,0,0,71.262,15h-.025A1.237,1.237,0,0,0,70,16.237v3.775a1.237,1.237,0,0,0,1.238,1.237h3.775a1.237,1.237,0,0,0,1.238-1.237v-.025A1.237,1.237,0,0,0,75.012,18.75Z" transform="translate(-62.5 -8.75)"/></svg>Show Office Hours</a>
+
+    </div>
+
+    <div class="links">
+
+      <a href="https://www.brightnow.com/appointment/" class="button red">Book an Appointment</a>
+
+      <a href="#" class="button launch-modal" data-modal-target="insurance">Accepted Insurance</a>
+
+      <a href="https://www.brightnow.com/offers/-dentist//" class="button">Offers</a>
+
+    </div>
+
+  </div>
+
+  <div  class="map-container">
+  
+    <div class="map" data-zoom="14">
+
+      <div class="marker" data-lat="" data-lng=""></div>
+
+    </div>
+
+    <p></p>
+
+  </div>
+
+</section><!-- end office details -->
+
+<div  class="modal" data-modal-id="hours">
+
+  <div  class="sub-content">
+
+    <a href="#" class="close-modal">&times;</a>
+
+    <h4>Office Hours</h4>
+
+    <ul class="hours-list">
+
+      <li><span>Monday</span><span></span></li>
+      <li><span>Tuesday</span><span></span></li>
+      <li><span>Wednesday</span><span></span></li>
+      <li><span>Thursday</span><span></span></li>
+      <li><span>Friday</span><span></span></li>
+      <li><span>Saturday</span><span></span></li>
+      <li><span>Sunday</span><span></span></li>
+
+    </ul>
+
+    <a href="https://www.brightnow.com/appointment/" class="button red">Book an Appointment</a>
+
+  </div>
+
+</div>
+
+<div  class="modal" data-modal-id="insurance">
+
+  <div  class="sub-content">
+
+    <a href="#" class="close-modal">&times;</a>
+
+    <h4>Accepted Insurance</h4>
+
+    <p>Below is a list of major dental insurance plans we accept in our ,  office. Don't see your plan listed? Give us a call at  to confirm.</p>
+
+    <div class="insurance-types">
+
+      
+      
+        
+          <div></div>
+
+        
+      
+    </div>
+
+    <a href="https://www.brightnow.com/appointment/" class="button red">Book an Appointment</a>
+
+  </div>
+
+</div>
+
+<section  class="dentists">
+
+  <div  class="container">
+
+    <div  class="sub-content">
+
+      <h3>
+        
+                
+          Meet Our Dentists in , 
+              
+      </h3>
+
+      
+      
+      
+      <a href="https://www.brightnow.com/appointment/" class="button red">Book an Appointment</a>
+
+    </div>
+
+    <div class="image">
+
+      
+      <img src="" alt=" Office Exterior">
+
+    </div>
+
+  </div><!-- end container -->
+
+  
+  
+    <div  class="container">
+
+      <p class="dentists-disclaimer">Important Note: Dental Specialty Providers generally provide services as Independent Contractors and are not employees of Castle Dental.</p>
+
+    </div>
+
+  
+</section><!-- end dentists -->
+
+
+
+
+
+<div  class="spacer" style="height: 80px;" data-size="80" data-mobile-size="40"></div>
+<section  class="services container">
+
+  <div  class="sub-content">
+
+    <h3>
+
+      Dental Services in ,     
+    </h3>
+
+    <div class="text ">
+
+      <p>
+        
+        We make getting the dental care you need simple. From dental cleanings, fillings and dental implants to orthodontic solutions like braces and clear aligners, we provide a comprehensive list of dental services all in one place. Trust your  dental team to provide the expertise and exceptional care for a radiant, healthy smile.      
+      </p>
+
+      
+    </div>
+
+    <div class="services-list">
+
+      
+        
+        <a href="https://www.brightnow.com/dental-office/-dentist//general-dentistry-services-service--/" class="blue" >
+
+          <img width="512" height="512" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3C/svg%3E" alt="" aria-hidden="true" data-lazy-src="https://www.castledental.com/wp-content/uploads/sites/2/2024/06/GeneralDentist.svg"><noscript><img width="512" height="512" src="https://www.castledental.com/wp-content/uploads/sites/2/2024/06/GeneralDentist.svg" alt="" aria-hidden="true"></noscript>
+
+          General Dentistry        
+        </a>
+
+      
+        
+        <a href="https://www.brightnow.com/dental-office/-dentist//dental-implants-service--/" class="red" >
+
+          <img width="512" height="512" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3C/svg%3E" alt="" aria-hidden="true" data-lazy-src="https://www.castledental.com/wp-content/uploads/sites/2/2024/06/DentalImplants.svg"><noscript><img width="512" height="512" src="https://www.castledental.com/wp-content/uploads/sites/2/2024/06/DentalImplants.svg" alt="" aria-hidden="true"></noscript>
+
+          Dental Implants        
+        </a>
+
+      
+        
+        <a href="https://www.brightnow.com/dental-office/-dentist//clear-aligners-service--/" class="orange" >
+
+          <img width="512" height="512" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3C/svg%3E" alt="" aria-hidden="true" data-lazy-src="https://www.castledental.com/wp-content/uploads/sites/2/2024/06/ClearAligners.svg"><noscript><img width="512" height="512" src="https://www.castledental.com/wp-content/uploads/sites/2/2024/06/ClearAligners.svg" alt="" aria-hidden="true"></noscript>
+
+          Clear Aligners        
+        </a>
+
+      
+        
+        <a href="https://www.brightnow.com/dental-office/-dentist//orthodontist-service--/" class="blue" >
+
+          <img width="512" height="512" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3C/svg%3E" alt="" aria-hidden="true" data-lazy-src="https://www.castledental.com/wp-content/uploads/sites/2/2024/06/Orthodontics.svg"><noscript><img width="512" height="512" src="https://www.castledental.com/wp-content/uploads/sites/2/2024/06/Orthodontics.svg" alt="" aria-hidden="true"></noscript>
+
+          Orthodontics        
+        </a>
+
+      
+        
+        <a href="https://www.brightnow.com/dental-office/-dentist//emergency-dental-care-service--/" class="orange" >
+
+          <img width="512" height="512" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3C/svg%3E" alt="" aria-hidden="true" data-lazy-src="https://www.castledental.com/wp-content/uploads/sites/2/2024/06/Emergency.svg"><noscript><img width="512" height="512" src="https://www.castledental.com/wp-content/uploads/sites/2/2024/06/Emergency.svg" alt="" aria-hidden="true"></noscript>
+
+          Emergency Dental Care        
+        </a>
+
+      
+        
+        <a href="https://www.brightnow.com/dental-office/-dentist//cosmetic-dental-care-service--/" class="blue" >
+
+          <img width="512" height="512" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3C/svg%3E" alt="" aria-hidden="true" data-lazy-src="https://www.castledental.com/wp-content/uploads/sites/2/2024/06/Cosmetic.svg"><noscript><img width="512" height="512" src="https://www.castledental.com/wp-content/uploads/sites/2/2024/06/Cosmetic.svg" alt="" aria-hidden="true"></noscript>
+
+          Cosmetic Dentistry        
+        </a>
+
+      
+    </div>
+
+    
+  </div>
+
+  
+    <a href="https://www.brightnow.com/dental-office/-dentist//--dental-services" class="large-icon-button" ><div>View All Services<img width="18" height="14" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2018%2014'%3E%3C/svg%3E" alt="" aria-hidden="true" data-lazy-src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/arrow.svg"><noscript><img width="18" height="14" src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/arrow.svg" alt="" aria-hidden="true"></noscript></div></a>
+
+  
+</section><!-- end services -->
+<div  class="spacer" style="height: 160px;" data-size="160" data-mobile-size="100"></div>
+
+<div  class="spacer" style="height: 80px;" data-size="80" data-mobile-size="40"></div>
+<section  class="insurance-offer container">
+
+  <div  class="box">
+
+    <h3>Dental Insurance & Financing</h3>
+
+    <p>We accept hundreds of PPO and HMO dental insurance. And for those patients without insurance, we offer the OneSmile Dental Plan. Membership provides free dental check-ups and 20-40% off dental services. And for those out-of pockets expenses we have low-interest, flexible financing options.</p>
+
+    <div class="buttons">
+
+      <a href="#" class="button launch-modal" data-modal-target="insurance">Accepted Insurance</a>
+
+      
+      
+        <a href="https://www.castledental.com/affordable-care/" class="button" >Financing Options</a>
+
+      
+    </div>
+
+  </div>
+
+  <div  class="box">
+
+    <h3>Prices That Make You Smile</h3>
+
+    <p>We believe that everyone deserves to have a beautiful, healthy smile. With affordable prices and special offers we make it easy and cost-effective to get high quality dental care that works within your budget.</p>
+
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    <div class="buttons">
+
+      
+      
+        <a href="https://www.castledental.com/offers/-dentist//" class="button">Offers</a>
+
+      
+    </div>
+
+  </div>
+
+  <img width="299" height="299" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20299%20299'%3E%3C/svg%3E" alt="" aria-hidden="true" class="support-image circle" data-lazy-src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/hero-circle.svg"><noscript><img width="299" height="299" src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/hero-circle.svg" alt="" aria-hidden="true" class="support-image circle"></noscript>
+  <img width="45" height="45" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2045%2045'%3E%3C/svg%3E" alt="" aria-hidden="true" class="support-image dot" data-lazy-src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/hero-dot.svg"><noscript><img width="45" height="45" src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/hero-dot.svg" alt="" aria-hidden="true" class="support-image dot"></noscript>
+  <img width="45" height="45" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2045%2045'%3E%3C/svg%3E" alt="" aria-hidden="true" class="support-image dot-small" data-lazy-src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/hero-dot.svg"><noscript><img width="45" height="45" src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/hero-dot.svg" alt="" aria-hidden="true" class="support-image dot-small"></noscript>
+  <img width="150" height="150" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20150%20150'%3E%3C/svg%3E" alt="" aria-hidden="true" class="support-image pattern" data-lazy-src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/hero-pattern.svg"><noscript><img width="150" height="150" src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/hero-pattern.svg" alt="" aria-hidden="true" class="support-image pattern"></noscript>
+
+</section><!-- end insurance offer -->
+<div data-wpr-lazyrender="1" class="spacer" style="height: 160px;" data-size="160" data-mobile-size="60"></div>
+<section data-wpr-lazyrender="1" class="faqs ">
+
+  <div  class="container">
+
+    
+      <div class="heading">
+
+        <div class="sub-heading">
+
+          <h2>Frequently Asked Questions</h2>
+
+          
+        </div>
+
+        
+        
+      </div>
+
+    
+    
+    
+    
+    <div class="faq-container">
+
+      
+        
+          
+          <div class="faq faq-appointment faq ">
+
+            <a class="faq-toggle" href="#">It’s been a long time since I’ve visited the dentist. What do I need to do?</a>
+
+            <div class="sub-content">
+
+              <p>No worries! Just make an appointment it&#8217;s that easy. If you have dental insurance please bring your insurance card with you. We&#8217;ll start with an exam and x-rays to assess your current oral health. If any additional treatment is needed we can schedule a future appointment or if everyone&#8217;s schedule permits we may be able to start treatment the same day.</p>
+
+            </div>
+
+          </div>
+
+        
+      
+        
+          
+          <div class="faq faq-financing ">
+
+            <a class="faq-toggle" href="#">Do you have financing Options?</a>
+
+            <div class="sub-content">
+
+              <p>Yes, we offer flexible payment plans featuring low interest rates and extended terms. Our team will help find you the financing plan that best fits your budget. We also accept most major credit cards and offer the <a href="https://www.castledental.com/affordable-care/">OneSmile Dental Plan</a> where members receive 20%-40% most dental services.</p>
+
+            </div>
+
+          </div>
+
+        
+      
+        
+          
+          <div class="faq faq-insurance ">
+
+            <a class="faq-toggle" href="#">Do you accept my insurance?</a>
+
+            <div class="sub-content">
+
+              <p>We accept most major PPO and HMO insurances. Click on the &#8220;Accepted Insurance&#8221; button at the top of the page or call the office to confirm that we accept your specific dental insurance.</p>
+
+            </div>
+
+          </div>
+
+        
+      
+        
+          
+          <div class="faq faq-dental-emergency ">
+
+            <a class="faq-toggle" href="#">Do you take emergency appointments?</a>
+
+            <div class="sub-content">
+
+              <p>Yes we do! Give us a call as soon as possible so we can schedule your appointment and treat the issue quickly.</p>
+
+            </div>
+
+          </div>
+
+        
+      
+        
+          
+          <div class="faq faq-appointment ">
+
+            <a class="faq-toggle" href="#">Does your office take walk-ins?</a>
+
+            <div class="sub-content">
+
+              <p>We will do our best to try to fit you in, please make an appointment if possible.</p>
+
+            </div>
+
+          </div>
+
+        
+      
+    </div>
+
+    
+      <div class="heading bottom">
+
+        
+        
+      </div>
+
+    
+  </div><!-- end container -->
+
+</section><!-- end faqs -->
+<div data-wpr-lazyrender="1" class="spacer" style="height: 160px;" data-size="160" data-mobile-size="60"></div>
+<section data-wpr-lazyrender="1" class="office-seo-content content container clearfix">
+
+	
+</section><!-- end content -->
+<div data-wpr-lazyrender="1" class="spacer" style="height: 40px;" data-size="40" data-mobile-size="20"></div><section data-wpr-lazyrender="1" class="content container narrow- clearfix">
+
+	<p style="text-align: center; font-size: .9rem;">*Services, hours, and insurance plans vary by location. Valid government issued photo ID and checking account required to get financing on approved credit.</p>
+
+</section><!-- end content -->
+
+<script type="application/ld+json">
+[
+  {
+    "@context": "http://schema.org",
+    "@type": "Dentist",
+    "name": "",
+    "telephone": "",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "",
+      "addressLocality": "",
+      "addressRegion": "",
+      "postalCode": "",
+      "addressCountry": "US"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": ,
+      "longitude":     },
+    "openingHours": [
+      "Mo 00:00-00:00",
+      "Tu 00:00-00:00",
+      "We 00:00-00:00",
+      "Th 00:00-00:00",
+      "Fr 00:00-00:00",
+      "Sa 00:00-00:00"
+    ],
+    "image": "",
+    "description": "",
+    "url": "https://www.castledental.com/dental-office/austin-dentist/35010/",
+    "medicalSpecialty": [
+                    {
+          "@type": "medicalSpecialty",
+          "name": "",
+          "description": ""
+        }
+              
+    ],
+    "employee": [
+                ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": "https://www.castledental.com/dental-office/austin-dentist/35010/#localbusiness",
+    "name": "",
+    "url": "https://www.castledental.com/dental-office/austin-dentist/35010/",
+    "telephone": "",
+    "image": "",
+    "priceRange": "$$",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "",
+      "addressLocality": "",
+      "addressRegion": "",
+      "postalCode": "",
+      "addressCountry": "US"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": ,
+      "longitude":       
+    },
+    "openingHoursSpecification": [
+              {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ],
+          "opens": "00:00",
+          "closes": "00:00"
+        }
+      
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": ,
+      "reviewCount": 0      
+    }
+  }
+]
+</script>
+
+<div  class="modal-overlay"></div>
+
+</main>
+
+<footer data-wpr-lazyrender="1" class="footer">
+
+  <div  class="container">
+
+    <div  class="box">
+
+      <nav class="footer-nav"><ul id="menu-footer-menu-1" class=""><li id="menu-item-9557" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9557"><a href="https://www.castledental.com/dental-offices-near-me/">Locations</a></li>
+<li id="menu-item-9555" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9555"><a href="https://www.castledental.com/dental-offices-near-me/">Find an Office</a></li>
+<li id="menu-item-9582" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9582"><a href="https://www.castledental.com/appointment/">Book an Appointment</a></li>
+<li id="menu-item-9583" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9583"><a href="https://www.castledental.com/what-to-expect/">Patient Forms</a></li>
+</ul></nav>
+    </div>
+
+    <div  class="box">
+
+      <nav class="footer-nav"><ul id="menu-footer-menu-2" class=""><li id="menu-item-9584" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9584"><a href="https://www.castledental.com/services/">Dental Services</a></li>
+<li id="menu-item-9585" class="menu-item menu-item-type-post_type menu-item-object-service menu-item-9585"><a href="https://www.castledental.com/services/orthodontist/">Braces &#038; Clear Aligners</a></li>
+<li id="menu-item-9586" class="menu-item menu-item-type-post_type menu-item-object-service menu-item-9586"><a href="https://www.castledental.com/services/emergency-dental-care/">Dental Emergencies</a></li>
+<li id="menu-item-9549" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-9549"><a href="/dental-terms/a/">Dental Glossary</a></li>
+<li id="menu-item-9571" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9571"><a href="https://www.castledental.com/frequently-asked-questions/">FAQs</a></li>
+</ul></nav>
+    </div>
+
+    <div  class="box">
+
+      <nav class="footer-nav"><ul id="menu-footer-menu-3" class=""><li id="menu-item-9589" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9589"><a href="https://www.castledental.com/affordable-care/">Affordable Care</a></li>
+<li id="menu-item-9590" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9590"><a href="https://www.castledental.com/affordable-care/">Insurance &#038; Financing</a></li>
+<li id="menu-item-9591" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9591"><a href="https://www.castledental.com/offers/find-an-offer/">Offers</a></li>
+<li id="menu-item-9546" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-9546"><a target="_blank" href="https://1smiledentalplan.com/">OneSmile Dental Plan</a></li>
+</ul></nav>
+    </div>
+
+    <div  class="box">
+
+      <nav class="footer-nav"><ul id="menu-footer-menu-4" class=""><li id="menu-item-9564" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9564"><a href="https://www.castledental.com/about-us/">About Us</a></li>
+<li id="menu-item-94" class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-94"><a href="https://www.castledental.com/blog/">Blog</a></li>
+<li id="menu-item-9565" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9565"><a href="https://www.castledental.com/patient-safety/">Patient Safety</a></li>
+<li id="menu-item-9566" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9566"><a href="https://www.castledental.com/about-us/press-room/">Press Room</a></li>
+<li id="menu-item-9547" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-9547"><a target="_blank" href="https://smilebrands.com/careers/">Careers</a></li>
+</ul></nav>
+    </div>
+
+    <div  class="box">
+
+      <div class="h4">Follow Us</div>
+
+      
+        <a href="https://www.facebook.com/CastleDental" class="social" target="_blank"><img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2052%2052'%3E%3C/svg%3E" alt="Facebook" width="52" height="52" data-lazy-src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/facebook.svg"><noscript><img src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/facebook.svg" alt="Facebook" width="52" height="52"></noscript></a>
+
+      
+      
+        <a href="tel:1-800-867-6453" class="phone">Call 1-800-867-6453</a>
+
+      
+      
+			
+				<a href="https://www.castledental.com/service/emergency-dental-care/" class="link" >Emergencies & Walk-Ins Welcome</a>
+
+			
+    </div>
+
+  </div><!-- end contianer -->
+
+</footer><!-- end footer -->
+
+
+<section data-wpr-lazyrender="1" class="copyright">
+
+  <div  class="container">
+
+    <a href="https://www.castledental.com" class="logo"><img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20250%2063'%3E%3C/svg%3E" title="" alt="Brand Logo" width="250" height="63" data-lazy-src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/castledental-logo-white.svg"><noscript><img src="https://www.castledental.com/wp-content/themes/smile-brands-core/images/castledental-logo-white.svg" title="" alt="Brand Logo" width="250" height="63"></noscript></a>
+
+    <div class="sub-content">
+
+      <nav class="copyright-nav"><ul id="menu-copyright-menu" class=""><li id="menu-item-9573" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9573"><a href="https://www.castledental.com/terms-and-conditions/">Terms and Conditions</a></li>
+<li id="menu-item-9572" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9572"><a href="https://www.castledental.com/privacy-policy/">U.S. Privacy Policy</a></li>
+</ul></nav>
+      <p>Orthodontics may be provided by general dentists. <br/>We do not discriminate based on race, color, national origin, ancestry, religion, sex, marital status, gender, gender identity, sexual orientation, age or disability.</p>
+
+    </div>
+
+  </div><!-- end container -->
+
+</section><!-- end copyright -->
+
+<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/wp-*.php","/wp-admin/*","/wp-content/uploads/sites/2/*","/wp-content/*","/wp-content/plugins/*","/wp-content/themes/smile-brands-core/*","/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+<script type="rocketlazyloadscript" id="rocket-browser-checker-js-after">
+"use strict";var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1,descriptor.configurable=!0,"value"in descriptor&&(descriptor.writable=!0),Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){return protoProps&&defineProperties(Constructor.prototype,protoProps),staticProps&&defineProperties(Constructor,staticProps),Constructor}}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor))throw new TypeError("Cannot call a class as a function")}var RocketBrowserCompatibilityChecker=function(){function RocketBrowserCompatibilityChecker(options){_classCallCheck(this,RocketBrowserCompatibilityChecker),this.passiveSupported=!1,this._checkPassiveOption(this),this.options=!!this.passiveSupported&&options}return _createClass(RocketBrowserCompatibilityChecker,[{key:"_checkPassiveOption",value:function(self){try{var options={get passive(){return!(self.passiveSupported=!0)}};window.addEventListener("test",null,options),window.removeEventListener("test",null,options)}catch(err){self.passiveSupported=!1}}},{key:"initRequestIdleCallback",value:function(){!1 in window&&(window.requestIdleCallback=function(cb){var start=Date.now();return setTimeout(function(){cb({didTimeout:!1,timeRemaining:function(){return Math.max(0,50-(Date.now()-start))}})},1)}),!1 in window&&(window.cancelIdleCallback=function(id){return clearTimeout(id)})}},{key:"isDataSaverModeOn",value:function(){return"connection"in navigator&&!0===navigator.connection.saveData}},{key:"supportsLinkPrefetch",value:function(){var elem=document.createElement("link");return elem.relList&&elem.relList.supports&&elem.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype}},{key:"isSlowConnection",value:function(){return"connection"in navigator&&"effectiveType"in navigator.connection&&("2g"===navigator.connection.effectiveType||"slow-2g"===navigator.connection.effectiveType)}}]),RocketBrowserCompatibilityChecker}();
+//# sourceURL=rocket-browser-checker-js-after
+</script>
+<script id="rocket-preload-links-js-extra">
+var RocketPreloadLinksConfig = {"excludeUris":"/(?:.+/)?feed(?:/(?:.+/?)?)?$|/(?:.+/)?embed/|/(index.php/)?(.*)wp-json(/.*|$)|/refer/|/go/|/recommend/|/recommends/","usesTrailingSlash":"1","imageExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|pdf|doc|docx|xls|xlsx|php","fileExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|pdf|doc|docx|xls|xlsx|php|html|htm","siteUrl":"https://www.castledental.com","onHoverDelay":"100","rateThrottle":"3"};
+//# sourceURL=rocket-preload-links-js-extra
+</script>
+<script type="rocketlazyloadscript" id="rocket-preload-links-js-after">
+(function() {
+"use strict";var r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},e=function(){function i(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(e,t,n){return t&&i(e.prototype,t),n&&i(e,n),e}}();function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var t=function(){function n(e,t){i(this,n),this.browser=e,this.config=t,this.options=this.browser.options,this.prefetched=new Set,this.eventTime=null,this.threshold=1111,this.numOnHover=0}return e(n,[{key:"init",value:function(){!this.browser.supportsLinkPrefetch()||this.browser.isDataSaverModeOn()||this.browser.isSlowConnection()||(this.regex={excludeUris:RegExp(this.config.excludeUris,"i"),images:RegExp(".("+this.config.imageExt+")$","i"),fileExt:RegExp(".("+this.config.fileExt+")$","i")},this._initListeners(this))}},{key:"_initListeners",value:function(e){-1<this.config.onHoverDelay&&document.addEventListener("mouseover",e.listener.bind(e),e.listenerOptions),document.addEventListener("mousedown",e.listener.bind(e),e.listenerOptions),document.addEventListener("touchstart",e.listener.bind(e),e.listenerOptions)}},{key:"listener",value:function(e){var t=e.target.closest("a"),n=this._prepareUrl(t);if(null!==n)switch(e.type){case"mousedown":case"touchstart":this._addPrefetchLink(n);break;case"mouseover":this._earlyPrefetch(t,n,"mouseout")}}},{key:"_earlyPrefetch",value:function(t,e,n){var i=this,r=setTimeout(function(){if(r=null,0===i.numOnHover)setTimeout(function(){return i.numOnHover=0},1e3);else if(i.numOnHover>i.config.rateThrottle)return;i.numOnHover++,i._addPrefetchLink(e)},this.config.onHoverDelay);t.addEventListener(n,function e(){t.removeEventListener(n,e,{passive:!0}),null!==r&&(clearTimeout(r),r=null)},{passive:!0})}},{key:"_addPrefetchLink",value:function(i){return this.prefetched.add(i.href),new Promise(function(e,t){var n=document.createElement("link");n.rel="prefetch",n.href=i.href,n.onload=e,n.onerror=t,document.head.appendChild(n)}).catch(function(){})}},{key:"_prepareUrl",value:function(e){if(null===e||"object"!==(void 0===e?"undefined":r(e))||!1 in e||-1===["http:","https:"].indexOf(e.protocol))return null;var t=e.href.substring(0,this.config.siteUrl.length),n=this._getPathname(e.href,t),i={original:e.href,protocol:e.protocol,origin:t,pathname:n,href:t+n};return this._isLinkOk(i)?i:null}},{key:"_getPathname",value:function(e,t){var n=t?e.substring(this.config.siteUrl.length):e;return n.startsWith("/")||(n="/"+n),this._shouldAddTrailingSlash(n)?n+"/":n}},{key:"_shouldAddTrailingSlash",value:function(e){return this.config.usesTrailingSlash&&!e.endsWith("/")&&!this.regex.fileExt.test(e)}},{key:"_isLinkOk",value:function(e){return null!==e&&"object"===(void 0===e?"undefined":r(e))&&(!this.prefetched.has(e.href)&&e.origin===this.config.siteUrl&&-1===e.href.indexOf("?")&&-1===e.href.indexOf("#")&&!this.regex.excludeUris.test(e.href)&&!this.regex.images.test(e.href))}}],[{key:"run",value:function(){"undefined"!=typeof RocketPreloadLinksConfig&&new n(new RocketBrowserCompatibilityChecker({capture:!0,passive:!0}),RocketPreloadLinksConfig).init()}}]),n}();t.run();
+}());
+
+//# sourceURL=rocket-preload-links-js-after
+</script>
+<script id="rocket_lazyload_css-js-extra">
+var rocket_lazyload_css_data = {"threshold":"300"};
+//# sourceURL=rocket_lazyload_css-js-extra
+</script>
+<script id="rocket_lazyload_css-js-after">
+!function o(n,c,a){function u(t,e){if(!c[t]){if(!n[t]){var r="function"==typeof require&&require;if(!e&&r)return r(t,!0);if(s)return s(t,!0);throw(e=new Error("Cannot find module '"+t+"'")).code="MODULE_NOT_FOUND",e}r=c[t]={exports:{}},n[t][0].call(r.exports,function(e){return u(n[t][1][e]||e)},r,r.exports,o,n,c,a)}return c[t].exports}for(var s="function"==typeof require&&require,e=0;e<a.length;e++)u(a[e]);return u}({1:[function(e,t,r){"use strict";{const c="undefined"==typeof rocket_pairs?[]:rocket_pairs,a=(("undefined"==typeof rocket_excluded_pairs?[]:rocket_excluded_pairs).map(t=>{var e=t.selector;document.querySelectorAll(e).forEach(e=>{e.setAttribute("data-rocket-lazy-bg-"+t.hash,"excluded")})}),document.querySelector("#wpr-lazyload-bg-container"));var o=rocket_lazyload_css_data.threshold||300;const u=new IntersectionObserver(e=>{e.forEach(t=>{t.isIntersecting&&c.filter(e=>t.target.matches(e.selector)).map(t=>{var e;t&&((e=document.createElement("style")).textContent=t.style,a.insertAdjacentElement("afterend",e),t.elements.forEach(e=>{u.unobserve(e),e.setAttribute("data-rocket-lazy-bg-"+t.hash,"loaded")}))})})},{rootMargin:o+"px"});function n(){0<(0<arguments.length&&void 0!==arguments[0]?arguments[0]:[]).length&&c.forEach(t=>{try{document.querySelectorAll(t.selector).forEach(e=>{"loaded"!==e.getAttribute("data-rocket-lazy-bg-"+t.hash)&&"excluded"!==e.getAttribute("data-rocket-lazy-bg-"+t.hash)&&(u.observe(e),(t.elements||=[]).push(e))})}catch(e){console.error(e)}})}n(),function(){const r=window.MutationObserver;return function(e,t){if(e&&1===e.nodeType)return(t=new r(t)).observe(e,{attributes:!0,childList:!0,subtree:!0}),t}}()(document.querySelector("body"),n)}},{}]},{},[1]);
+//# sourceURL=rocket_lazyload_css-js-after
+</script>
+<script type="rocketlazyloadscript" id="scripts-js" data-rocket-src="https://www.castledental.com/wp-content/themes/smile-brands-core/js/scripts.min.js?ver=1787693666" data-rocket-defer defer></script>
+<script id="google-maps-js" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBaiqhDnwp4LlVDJcF8z2k4CIWGD6Au6Lw" data-rocket-defer defer></script>
+<script>window.lazyLoadOptions=[{elements_selector:"img[data-lazy-src],.rocket-lazyload,iframe[data-lazy-src]",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,callback_loaded:function(element){if(element.tagName==="IFRAME"&&element.dataset.rocketLazyload=="fitvidscompatible"){if(element.classList.contains("lazyloaded")){if(typeof window.jQuery!="undefined"){if(jQuery.fn.fitVids){jQuery(element).parent().fitVids()}}}}}},{elements_selector:".rocket-lazyload",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,}];window.addEventListener('LazyLoad::Initialized',function(e){var lazyLoadInstance=e.detail.instance;if(window.MutationObserver){var observer=new MutationObserver(function(mutations){var image_count=0;var iframe_count=0;var rocketlazy_count=0;mutations.forEach(function(mutation){for(var i=0;i<mutation.addedNodes.length;i++){if(typeof mutation.addedNodes[i].getElementsByTagName!=='function'){continue}
+if(typeof mutation.addedNodes[i].getElementsByClassName!=='function'){continue}
+images=mutation.addedNodes[i].getElementsByTagName('img');is_image=mutation.addedNodes[i].tagName=="IMG";iframes=mutation.addedNodes[i].getElementsByTagName('iframe');is_iframe=mutation.addedNodes[i].tagName=="IFRAME";rocket_lazy=mutation.addedNodes[i].getElementsByClassName('rocket-lazyload');image_count+=images.length;iframe_count+=iframes.length;rocketlazy_count+=rocket_lazy.length;if(is_image){image_count+=1}
+if(is_iframe){iframe_count+=1}}});if(image_count>0||iframe_count>0||rocketlazy_count>0){lazyLoadInstance.update()}});var b=document.getElementsByTagName("body")[0];var config={childList:!0,subtree:!0};observer.observe(b,config)}},!1)</script><script data-no-minify="1" async src="https://www.castledental.com/wp-content/plugins/wp-rocket/assets/js/lazyload/17.8.3/lazyload.min.js"></script><script>function lazyLoadThumb(e,alt,l){var t='<img data-lazy-src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"><noscript><img src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"></noscript>',a='<button class="play" aria-label="Play Youtube video"></button>';if(l){t=t.replace('data-lazy-','');t=t.replace('loading="lazy"','');t=t.replace(/<noscript>.*?<\/noscript>/g,'');}t=t.replace('alt=""','alt="'+alt+'"');return t.replace("ID",e)+a}function lazyLoadYoutubeIframe(){var e=document.createElement("iframe"),t="ID?autoplay=1";t+=0===this.parentNode.dataset.query.length?"":"&"+this.parentNode.dataset.query;e.setAttribute("src",t.replace("ID",this.parentNode.dataset.src)),e.setAttribute("frameborder","0"),e.setAttribute("allowfullscreen","1"),e.setAttribute("allow","accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"),this.parentNode.parentNode.replaceChild(e,this.parentNode)}document.addEventListener("DOMContentLoaded",function(){var exclusions=[];var e,t,p,u,l,a=document.getElementsByClassName("rll-youtube-player");for(t=0;t<a.length;t++)(e=document.createElement("div")),(u='https://i.ytimg.com/vi/ID/hqdefault.jpg'),(u=u.replace('ID',a[t].dataset.id)),(l=exclusions.some(exclusion=>u.includes(exclusion))),e.setAttribute("data-id",a[t].dataset.id),e.setAttribute("data-query",a[t].dataset.query),e.setAttribute("data-src",a[t].dataset.src),(e.innerHTML=lazyLoadThumb(a[t].dataset.id,a[t].dataset.alt,l)),a[t].appendChild(e),(p=e.querySelector(".play")),(p.onclick=lazyLoadYoutubeIframe)});</script>
+
+
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+  var ajaxurl = "https://www.castledental.com/wp-admin/admin-ajax.php";
+</script>
+		
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3d891f7081c4b55',t:'MTc4OTgyMDY5Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+<!-- Optimized for great performance -->
