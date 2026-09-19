@@ -309,14 +309,14 @@ written as the work happened rather than reconstructed afterwards.
 | | |
 |---|---|
 | Core build, tasks 1 to 27 | 604 minutes, about 10 hours |
-| Extended work, evals, notebook, docs, ops | 295 minutes, about 5 hours |
-| **Total** | **899 minutes, about 15 hours** |
+| Extended work: evals, notebook, docs, ops | 350 minutes, about 6 hours |
+| **Total** | **954 minutes, about 16 hours** |
 
-The handbook suggests roughly five hours of coding. This took three times that, and the
-log says so rather than rounding down. The core API and UI are the first ten hours; the
-remainder is the extraction eval, the notebook, the deployment and the documentation, none
-of which is code the product needs to run. If the five hours is a hard constraint, the
-honest thing to say is that this exceeds it.
+The handbook suggests roughly five hours of coding. This took three times that, and the log
+says so rather than rounding down. The first ten hours are the API and the UI; the rest is
+the extraction eval, the notebook, the deployment and the documentation, none of which is
+code the product needs in order to run. If five hours is a hard constraint, the honest
+answer is that this exceeds it.
 
 ## What I would build next
 
