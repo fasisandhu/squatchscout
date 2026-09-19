@@ -36,3 +36,6 @@ Thumbs.db
 
 # never commit the confidential handbook
 *.docx
+
+# local Claude Code settings (machine-specific, not part of the project)
+.claude/settings.local.json
