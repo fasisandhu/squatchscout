@@ -9,8 +9,7 @@ PYTHONPATH=api python evals/extraction_eval.py          # regex only, no network
 PYTHONPATH=api python evals/extraction_eval.py --llm    # adds Groq, needs GROQ_API_KEY
 ```
 
-Both modes rewrite `results.md`. `results-baseline.md` is a frozen copy of the first
-measured run, kept so the effect of later prompt changes stays visible.
+Both modes rewrite `results.md`, which is committed for the shipping configuration.
 
 ## What is being measured
 
@@ -72,6 +71,46 @@ The set deliberately includes hard cases:
 - **castle-dental** is a national brand; **sonrisas-dental**, **kunik-orthodontics** and
   **blue-wrench** are independent businesses with two or three locations each.
 - **a-better-auto-repair** is a Wix site and **germanstar-auto** a Squarespace one.
+
+## What the eval changed
+
+Two things, neither of which was visible before there were numbers.
+
+**The extraction call was not deterministic.** `complete_json` never set `temperature`,
+so it ran at the provider default and reading the same page twice could give different
+answers. The first attempt to improve the prompt appeared to cost 3 points out of 64;
+repeating both arms at `temperature=0` showed the real difference was 1 changed
+judgement out of 64. Fact extraction now runs at `temperature=0`, with a test asserting
+the value reaches the client. Without that, this whole folder measures noise.
+
+**Writing a description for every schema field did not help.** The four fields were
+being sent to the model as bare names with no definition, which looked like an obvious
+gap. Adding the same wording the ground truth uses, plus a system prompt warning that
+customer reviews are not statements of fact, changed exactly one of 64 judgements and
+moved neither score. It was reverted: the descriptions cost roughly 400 extra tokens on
+every call against an 8,000-token-per-minute free-tier budget, and bought nothing
+measurable on this model and this set.
+
+| Configuration | Exact | Positive evidence |
+|---|---|---|
+| Regex only | 31/64 | 54/64 |
+| Regex + LLM, bare schema, `temperature=0` (shipping) | 41/64 | 58/64 |
+| Regex + LLM, described schema, `temperature=0` | 41/64 | 58/64 |
+
+## Where the LLM helps, and where it does not
+
+The entire exact-match gain is `is_chain`, which goes from 1/16 to 8/16 because
+`RegexSignals` has no such field at all — chain detection in the pipeline proper is a
+dataset-level check on repeated names and OSM `brand` tags, so a single page cannot
+answer it. The model also recovers `kc-dental`'s 2006, which the regex misses because
+"founded in July 2006" puts a month between the keyword and the year.
+
+Against that, the model still misses real chains. Castle Dental is a national brand and
+the model calls it independent. It also cannot retract a regex mistake: on
+`mountain-view-service` the regex reads 1988 out of a customer review, the model
+correctly returns null, and `merge_signals` only overrides on a non-null higher-confidence
+value — so the wrong year survives into the final record. That is a merge-policy
+limitation the eval surfaced, not a model failure.
 
 ## The labels are hand-made, and one of them was wrong
 
