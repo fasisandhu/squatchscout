@@ -13,3 +13,6 @@ Dockerfile text eol=lf
 *.png binary
 *.jpg binary
 *.ipynb text eol=lf
+
+# eval fixtures are byte-exact snapshots of pages as they were served; do not touch them
+evals/golden/*.html binary

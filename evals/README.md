@@ -90,6 +90,12 @@ because it is the failure mode an eval is supposed to catch, and it cuts both wa
 
 The HTML snapshots are committed, so the numbers are stable even as these businesses
 redesign their sites. They were fetched once each, with the crawler's own user agent,
-following redirects. Two candidate sites returned 403 to that user agent and one
-returned 502; they were dropped rather than re-fetched with a disguised user agent,
-which is also a small honest signal about real-world crawl coverage.
+following redirects. Git normalised line endings on the first commit, so the files are
+byte-identical to what was served apart from CRLF becoming LF; they are marked `binary`
+in `.gitattributes` from that point on, so nothing rewrites them again. The extractors
+collapse whitespace before matching, and the regex-only run produces the same 31/64 and
+54/64 either way.
+
+Two candidate sites returned 403 to the crawler's user agent and one returned 502. They
+were dropped rather than re-fetched behind a disguised user agent, which is itself a
+small honest signal about real-world crawl coverage.
