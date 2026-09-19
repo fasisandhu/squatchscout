@@ -48,13 +48,17 @@ def clean_html(html: str) -> tuple[str, str, str, list[str], str]:
     head = tree.head.html if tree.head else ""
     title = tree.css_first("title").text(strip=True) if tree.css_first("title") else ""
     meta_node = tree.css_first('meta[name="description"]')
-    meta = meta_node.attributes.get("content", "") if meta_node else ""
-    links = [a.attributes.get("href", "") for a in tree.css("a[href]")]
+    # selectolax maps a valueless-or-empty attribute to None, so `.get(k, "")` hands back
+    # None rather than the default -- `<meta name="description" content="">` (Squarespace
+    # emits exactly that) and `<a href>` both used to fail PageText validation, which
+    # crawl_site reported as "unreachable" on a site that had answered 200.
+    meta = (meta_node.attributes.get("content") or "") if meta_node else ""
+    links = [a.attributes.get("href") or "" for a in tree.css("a[href]")]
     for tag in STRIP_TAGS:
         for n in tree.css(tag):
             n.decompose()
     for n in tree.css("[class], [id]"):
-        ident = f"{n.attributes.get('class', '')} {n.attributes.get('id', '')}"
+        ident = f"{n.attributes.get('class') or ''} {n.attributes.get('id') or ''}"
         if BANNER_HINT.search(ident):
             n.decompose()
     body = tree.body.text(separator="\n") if tree.body else tree.text(separator="\n")

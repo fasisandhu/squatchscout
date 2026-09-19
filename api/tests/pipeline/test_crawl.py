@@ -84,3 +84,32 @@ async def test_crawl_caps_body_at_max_bytes(monkeypatch):
     # the cap is enforced in _get (on the wire), before _page/clean_html ever see the body
     assert recorded and all(len(body) <= crawl_mod.MAX_BYTES for body in recorded)
     assert max(len(body) for body in recorded) == crawl_mod.MAX_BYTES
+
+
+@respx.mock
+async def test_crawl_survives_valueless_attributes():
+    """Regression: selectolax returns None for an attribute present but empty.
+
+    `<meta name="description" content="">` is what Squarespace emits, and
+    `attributes.get("content", "")` returns None for it rather than the default,
+    so PageText rejected it and a reachable site was reported "unreachable"
+    with every website-derived signal lost. Same shape for `<a href>`.
+    """
+    body = (
+        '<html><head><title>Germanstar</title><meta name="description" content="">'
+        "</head><body><a href>bare</a><a href='/contact'>Contact</a>"
+        "<p>" + ("Independent Mercedes service in Boise. " * 20) + "</p></body></html>"
+    )
+    respx.get("https://germanstar.example/robots.txt").mock(return_value=httpx.Response(404))
+    respx.get("https://germanstar.example/").mock(return_value=httpx.Response(200, html=body))
+    respx.get("https://germanstar.example/contact").mock(return_value=httpx.Response(404))
+    async with httpx.AsyncClient() as c:
+        res = await crawl_site("https://germanstar.example/", c)
+    assert res.status == "ok"
+    assert res.bundle is not None
+    page = res.bundle.pages[0]
+    assert page.meta_description == ""
+    assert page.title == "Germanstar"
+    assert page.text_quality == "good"
+    assert all(isinstance(h, str) for h in page.links)
+    assert "/contact" in page.links
