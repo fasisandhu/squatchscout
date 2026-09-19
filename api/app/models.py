@@ -1,7 +1,7 @@
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import Column, Index, UniqueConstraint
+from sqlalchemy import BigInteger, Column, Index, UniqueConstraint
 from sqlmodel import Field, SQLModel
 
 from app.db import JSONType
@@ -49,7 +49,11 @@ class Lead(SQLModel, table=True):
     id: str = Field(primary_key=True)
     search_id: str = Field(foreign_key="searches.id")
     osm_type: str
-    osm_id: int
+    # BIGINT, not INTEGER. OpenStreetMap node ids passed 2^31 years ago, so a plain
+    # Integer column overflows on Postgres. SQLite stores any width happily, which is
+    # why the whole test suite passed while production silently dropped 49 of 54 leads
+    # in the first real search.
+    osm_id: int = Field(sa_column=Column(BigInteger, nullable=False))
     name: str
     display_name: str
     normalized_name: str

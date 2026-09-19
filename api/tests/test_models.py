@@ -43,3 +43,20 @@ def test_datetime_columns_round_trip_naive(db):
         row = s.get(OverpassCache, "k")
         assert row.expires_at.tzinfo is None
         assert (row.expires_at > utcnow()) is True
+
+
+def test_osm_id_is_a_64_bit_column():
+    """Regression: OSM node ids exceed 2^31, and Postgres enforces column width.
+
+    This asserts the declared type rather than round-tripping a big value, because
+    SQLite stores any integer width happily -- a value-based test passes against the
+    test backend whether or not the bug is present, which is exactly how the original
+    defect reached production and dropped 49 of 54 leads on the first real search.
+    """
+    from sqlalchemy import BigInteger
+
+    from app.models import Lead
+
+    col = Lead.__table__.c.osm_id
+    assert isinstance(col.type, BigInteger), f"osm_id must be BIGINT, got {col.type!r}"
+    assert not col.nullable
