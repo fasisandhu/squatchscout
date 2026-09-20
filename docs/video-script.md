@@ -5,8 +5,9 @@ below is measured and is in the repo; do not round them up on camera.
 
 ## Before recording
 
-- [ ] Warm the API with the exact search you will demo (Dentists / Austin, TX / 60). A cold
-      run takes 137 seconds and a warm one takes 36. Warm it, then reload the page.
+- [ ] Warm the API with the exact search you will demo (Dentists / Austin, TX / 60) at
+      https://squatchscout-omega.vercel.app. On the deployed server a cold run takes about
+      92 seconds and a warm one about 4. Warm it, then reload the page.
 - [ ] Browser at 1920×1080, zoom exactly 100%, bookmarks bar hidden, one tab only.
 - [ ] A second tab already on the repo's README, scrolled to the architecture diagram.
 - [ ] A terminal window ready with the eval table on screen (`evals/results.md`).
@@ -55,9 +56,9 @@ Watch the form fill itself in. Press Scout. Let the rows stream.*
 *Switch to the architecture diagram in the README.*
 
 > FastAPI on a t3.micro Ubuntu box, in Docker Compose behind Caddy, which handles TLS
-> itself. Postgres with Alembic migrations. The static front end is on Vercel. A push to
-> main runs the tests, then deploys over SSH and polls the health endpoint for the new
-> commit hash — if it does not appear, the script rolls itself back.
+> itself. Postgres with Alembic migrations. The static front end is on Vercel. Every push
+> runs the tests in CI. The deploy script rebuilds on the server, then polls the health
+> endpoint for the new commit hash — if it does not appear, it rolls itself back.
 >
 > The API is a persistent process rather than a serverless function because one search
 > holds a stream open for two minutes of rate-limited crawling.
