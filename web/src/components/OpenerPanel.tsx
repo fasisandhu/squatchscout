@@ -20,13 +20,13 @@ export function OpenerPanel({ leadId }: { leadId: string }) {
         <>
           <pre className="whitespace-pre-wrap rounded-lg border border-border bg-surface-2 p-3 text-sm">{text}</pre>
           <div className="flex gap-2">
-            <button type="button" onClick={() => navigator.clipboard?.writeText(text).catch(() => setErr("Couldn't copy — select the text above instead."))} className="inline-flex items-center gap-1 text-xs text-muted hover:text-text"><Copy className="size-3" /> copy</button>
-            <button type="button" onClick={draft} disabled={busy} className="text-xs text-muted hover:text-text">redraft</button>
+            <button type="button" onClick={() => navigator.clipboard?.writeText(text).catch(() => setErr("Couldn't copy. Select the text above instead."))} className="btn-quiet"><Copy className="size-3" aria-hidden /> Copy</button>
+            <button type="button" onClick={draft} disabled={busy} className="btn-quiet">Redraft</button>
           </div>
         </>
       ) : (
-        <button type="button" onClick={draft} disabled={busy} className="inline-flex items-center gap-2 rounded-lg border border-accent/40 px-3 py-2 text-sm text-accent hover:bg-accent/10 disabled:opacity-50">
-          {busy ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />} Draft call opener
+        <button type="button" onClick={draft} disabled={busy} className="btn-secondary self-start">
+          {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Sparkles className="size-4 text-accent" aria-hidden />} Draft call opener
         </button>
       )}
       {err && <p className="text-xs text-tier-c" role="alert">{err}</p>}

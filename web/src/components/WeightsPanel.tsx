@@ -10,12 +10,11 @@ export function WeightsPanel({ weights, preset, onChange, onPreset }: { weights:
     <section className="card p-4 flex flex-col gap-3" aria-labelledby="weights-h">
       <div className="flex items-center justify-between">
         <h2 id="weights-h" className="text-sm font-semibold">Ranking weights</h2>
-        <button type="button" onClick={() => onPreset("balanced")} className="inline-flex items-center gap-1 text-xs text-muted hover:text-text" aria-label="Reset weights"><RotateCcw className="size-3" /> reset</button>
+        <button type="button" onClick={() => onPreset("balanced")} className="btn-quiet" aria-label="Reset weights"><RotateCcw className="size-3" aria-hidden /> Reset</button>
       </div>
       <div className="flex flex-wrap gap-1.5">
         {Object.keys(WEIGHT_PRESETS).map((name) => (
-          <button key={name} type="button" onClick={() => onPreset(name)} aria-pressed={preset === name}
-            className={`rounded-full border px-2.5 py-1 text-xs ${preset === name ? "border-accent text-accent" : "border-border text-muted hover:text-text"}`}>{PRESET_LABELS[name]}</button>
+          <button key={name} type="button" onClick={() => onPreset(name)} aria-pressed={preset === name} className="chip">{PRESET_LABELS[name]}</button>
         ))}
       </div>
       {FACTORS.map((f: Factor) => (

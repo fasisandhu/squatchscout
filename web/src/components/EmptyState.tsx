@@ -14,7 +14,7 @@ export function EmptyState({ onExample, llmEnabled }: { onExample: (text: string
       {llmEnabled && (
         <div className="flex flex-wrap justify-center gap-2 pt-2">
           {EXAMPLES.map((t) => (
-            <button key={t} type="button" onClick={() => onExample(t)} className="rounded-full border border-border bg-surface-2 px-3 py-1 text-xs text-muted hover:text-text">“{t}”</button>
+            <button key={t} type="button" onClick={() => onExample(t)} className="chip">“{t}”</button>
           ))}
         </div>
       )}

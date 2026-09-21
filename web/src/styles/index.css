@@ -9,6 +9,11 @@
   --color-muted: #8b9bb4;
   --color-accent: #14b8a6;
   --color-accent-2: #3b82f6;
+  /* Pressed and hover states for the accent, so buttons can change without a gradient. */
+  --color-accent-hover: #2dd4bf;
+  --color-accent-press: #0f9488;
+  /* Ink on a filled accent button: 6.9:1 against --color-accent. */
+  --color-on-accent: #04201c;
   --color-tier-a: #34d399;
   --color-tier-b: #38bdf8;
   --color-tier-c: #fbbf24;
@@ -18,8 +23,63 @@
 
 html, body, #root { height: 100%; }
 body { @apply bg-bg text-text font-sans antialiased; font-feature-settings: "tnum"; }
-.btn-primary { @apply rounded-lg px-4 py-2 font-medium text-white shadow-sm disabled:opacity-50;
-  background-image: linear-gradient(90deg, var(--color-accent), var(--color-accent-2)); }
-.card { @apply rounded-xl border border-border bg-surface; }
-.input { @apply w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-text placeholder:text-muted
-  focus:outline-none focus:ring-2 focus:ring-accent; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+/* Everything below sits in the components layer on purpose: Tailwind orders utilities after
+   components, so `className="input pl-9"` actually moves the padding. Unlayered, `.input`'s
+   own px-3 won the cascade and the search bar's icon sat on top of the first letter. */
+@layer components {
+  .card { @apply rounded-xl border border-border bg-surface; }
+
+  .input {
+    @apply w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-text
+      placeholder:text-muted transition-colors duration-150
+      focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/40;
+  }
+
+  /* Three button roles, one geometry, so a row of them reads as a set.
+     Filled is reserved for the single action that starts work on a screen. */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-transparent
+      px-3.5 py-2 text-sm font-medium transition-colors duration-150
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent
+      focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+      disabled:opacity-40 disabled:pointer-events-none;
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  .btn-primary:hover:not(:disabled) { background-color: var(--color-accent-hover); }
+  .btn-primary:active:not(:disabled) { background-color: var(--color-accent-press); }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-border
+      bg-surface-2 px-3.5 py-2 text-sm font-medium text-text transition-colors duration-150
+      hover:border-accent/60 hover:bg-surface
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent
+      focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+      disabled:opacity-40 disabled:pointer-events-none;
+  }
+
+  .btn-quiet {
+    @apply inline-flex items-center gap-1.5 rounded-md border border-transparent px-2 py-1
+      text-xs font-medium text-muted transition-colors duration-150
+      hover:bg-surface-2 hover:text-text
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent
+      disabled:opacity-40 disabled:pointer-events-none;
+  }
+
+  /* Pills carry state through aria-pressed, so the markup says what the styling shows. */
+  .chip {
+    @apply inline-flex items-center rounded-full border border-border bg-surface-2 px-2.5 py-1
+      text-xs text-muted transition-colors duration-150
+      hover:border-accent/50 hover:text-text
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent;
+  }
+  .chip[aria-pressed="true"] {
+    @apply border-accent text-accent;
+    background-color: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  }
+}

@@ -51,11 +51,11 @@ export function SearchBar({ industries, llmEnabled, busy, onSubmit, initialText 
       {llmEnabled && (
         <div className="flex gap-2">
           <div className="relative flex-1">
-            <Sparkles className="absolute left-3 top-2.5 size-4 text-accent" aria-hidden />
+            <Sparkles className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-accent" aria-hidden />
             <input className="input pl-9" value={nl} onChange={(e) => setNl(e.target.value)} placeholder='Describe it: "dentists in Austin, ideally owners near retirement"'
               aria-label="Describe your search in plain language" onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void parseIntent(); } }} />
           </div>
-          <button type="button" onClick={parseIntent} disabled={parsing || !nl.trim()} className="rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm hover:bg-border disabled:opacity-50">
+          <button type="button" onClick={parseIntent} disabled={parsing || !nl.trim()} className="btn-secondary shrink-0">
             {parsing ? <Loader2 className="size-4 animate-spin" aria-label="Parsing" /> : "Fill form"}
           </button>
         </div>
@@ -68,7 +68,7 @@ export function SearchBar({ industries, llmEnabled, busy, onSubmit, initialText 
         </select>
         <input className="input" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="City, state or country" aria-label="Location" required minLength={2} />
         <input className="input" type="number" min={5} max={100} value={limit} onChange={(e) => setLimit(Number(e.target.value))} aria-label="Maximum results" />
-        <button type="submit" disabled={!canRun} className="btn-primary flex items-center justify-center gap-2">
+        <button type="submit" disabled={!canRun} className="btn-primary">
           {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Search className="size-4" aria-hidden />} Scout
         </button>
       </div>

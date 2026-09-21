@@ -31,14 +31,14 @@ export default function App() {
     <div className="flex min-h-screen flex-col">
       <header className="flex items-center justify-between border-b border-border px-4 py-3">
         <div className="flex items-baseline gap-2">
-          <span className="bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-lg font-bold text-transparent">{APP_NAME}</span>
-          <span className="text-xs text-muted">ranked · verified · explained</span>
+          <span className="text-lg font-semibold tracking-tight text-accent">{APP_NAME}</span>
+          <span className="text-xs text-muted">Which businesses to call first</span>
         </div>
       </header>
       {boot.apiDown && (
         <div className="flex w-full flex-wrap items-center justify-center gap-2 bg-tier-c/10 px-4 py-2 text-center text-sm text-tier-c">
           <span>The API is not reachable. If it was just deployed it may still be starting — retry in a few seconds.</span>
-          <button type="button" onClick={boot.retry} className="rounded-md border border-tier-c/50 px-2 py-0.5 text-xs font-medium hover:bg-tier-c/10">Retry</button>
+          <button type="button" onClick={boot.retry} className="btn-quiet border-tier-c/50 text-tier-c hover:bg-tier-c/10 hover:text-tier-c">Retry</button>
         </div>
       )}
       <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 px-4 py-6">
