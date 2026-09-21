@@ -86,7 +86,7 @@ Watch the form fill itself in. Press Scout. Let the rows stream.*
 
 | Claim | Source |
 |---|---|
-| 137 s cold, 36 s warm | The two runs logged in `docs/time-log.md`, same query |
+| 92 s cold, 4 s warm | README, "Caching and performance"; measured on the deployed server |
 | Five scoring factors, weights 25/20/20/20/15 | `api/app/pipeline/score.py` |
 | Same arithmetic both sides, one fixture | `api/tests/fixtures/golden_scores.json` |
 | 31/64 regex, 41/64 with the model | `evals/results.md` |

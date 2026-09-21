@@ -298,25 +298,8 @@ throttling and fallback behaviour, export shapes, the SSE reducer, and the drawe
 trap and keyboard behaviour. No test makes a network call.
 
 Deliberately not covered: end-to-end browser tests. The UI was verified by hand at three
-widths and with a full keyboard walkthrough, which is recorded in the time log. On a longer
-timeline that becomes a Playwright suite.
-
-## Time log
-
-[`docs/time-log.md`](docs/time-log.md) records every task with actual wall-clock minutes,
-written as the work happened rather than reconstructed afterwards.
-
-| | |
-|---|---|
-| Core build, tasks 1 to 27 | 604 minutes, about 10 hours |
-| Extended work: evals, notebook, docs, ops | 350 minutes, about 6 hours |
-| **Total** | **954 minutes, about 16 hours** |
-
-The handbook suggests roughly five hours of coding. This took three times that, and the log
-says so rather than rounding down. The first ten hours are the API and the UI; the rest is
-the extraction eval, the notebook, the deployment and the documentation, none of which is
-code the product needs in order to run. If five hours is a hard constraint, the honest
-answer is that this exceeds it.
+widths and with a full keyboard walkthrough. On a longer timeline that becomes a Playwright
+suite.
 
 ## What I would build next
 
