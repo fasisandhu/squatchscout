@@ -18,7 +18,8 @@ export function OpenerPanel({ leadId }: { leadId: string }) {
     <div className="flex flex-col gap-2">
       {text ? (
         <>
-          <pre className="whitespace-pre-wrap rounded-lg border border-border bg-surface-2 p-3 text-sm">{text}</pre>
+          {/* Prose someone reads down a phone line, so sans and a normal measure, not <pre>'s monospace. */}
+          <p className="whitespace-pre-wrap rounded-lg border border-border bg-surface-2 p-3 text-sm leading-relaxed">{text}</p>
           <div className="flex gap-2">
             <button type="button" onClick={() => navigator.clipboard?.writeText(text).catch(() => setErr("Couldn't copy. Select the text above instead."))} className="btn-quiet"><Copy className="size-3" aria-hidden /> Copy</button>
             <button type="button" onClick={draft} disabled={busy} className="btn-quiet">Redraft</button>
