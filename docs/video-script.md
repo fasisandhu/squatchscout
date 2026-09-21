@@ -1,7 +1,11 @@
 # Video script — 2 minutes
 
-Target: 1:55 to 2:05. About 265 spoken words at a normal, unhurried pace. Every number
-below is measured and is in the repo; do not round them up on camera.
+285 spoken words, which lands at 1:57 at a normal 145 words per minute. Every number below
+is measured and lives in this repo; do not round any of them up on camera.
+
+The narration is kept as a separate plain-text file with no stage directions in it, so it
+can be pasted straight into a teleprompter. This file is the shot list that goes with it:
+one section per spoken paragraph.
 
 ## Before recording
 
@@ -17,80 +21,35 @@ below is measured and is in the repo; do not round them up on camera.
 
 ## Shots
 
-### 0:00–0:18 — The problem
+| Paragraph | Ends at | What is on screen |
+|---|---|---|
+| 1 | 0:15 | SaaSquatch Leads' search page, then cut to this app's empty state |
+| 2 | 0:26 | Type the plain-language query, press **Fill form**, let the fields populate |
+| 3 | 0:39 | Press **Scout**. Rows stream in. Let the status line do the talking |
+| 4 | 0:54 | Drag the succession slider. Rows reorder with no network activity |
+| 5 | 1:08 | Open a lead. Scroll to Digital-maturity gap so "no website at all +20" is visible |
+| 6 | 1:28 | The architecture diagram in the README |
+| 7 | 1:48 | A terminal showing `evals/results.md`, the accuracy table on screen |
+| 8 | 1:57 | Back to the app. Export the HubSpot CSV and show the downloaded file |
 
-*On screen: the SaaSquatch Leads search page, then your app's empty state.*
+Two shots carry the argument, so give them the most care. Paragraph 5 is the only moment
+that explains why a missing website scores *up*, which is the whole business thesis.
+Paragraph 7 is the only moment that shows the work was measured rather than asserted.
 
-> An acquisition entrepreneur is someone raising money to buy one small business and run
-> it. Their bottleneck is not finding companies. It is working out which of four hundred
-> local dentists is worth a phone call on Monday morning. Existing lead tools hand you the
-> list. They do not tell you where to start.
-
-### 0:18–0:50 — A search, streaming
-
-*Type "dentists in Austin whose owners are near retirement" into the natural-language box.
-Watch the form fill itself in. Press Scout. Let the rows stream.*
-
-> So I built the ranking layer. That sentence went to a language model which filled in the
-> industry, the city and the weighting preset — nothing more; it never touches the data.
->
-> Now businesses are arriving from OpenStreetMap. Each one gets its website crawled,
-> politely and within robots.txt, its email checked with a real MX lookup, its phone
-> validated, duplicates and chains merged away, and a score from zero to a hundred across
-> five factors.
-
-### 0:50–1:12 — Why the ranking is defensible
-
-*Drag the succession slider. Rows reorder instantly. Open a lead's drawer.*
-
-> Moving a weight re-ranks in the browser with no network call, because every lead carries
-> its factor points and the total is just arithmetic. The same arithmetic runs on the
-> server, and both are tested against one shared fixture.
->
-> Open any row and every point has a reason. Note this one: no website at all, plus twenty.
-> That is deliberate. A profitable local business whose owner never built a website is not
-> bad data — it is the whole thesis.
-
-### 1:12–1:34 — What is underneath
-
-*Switch to the architecture diagram in the README.*
-
-> FastAPI on a t3.micro Ubuntu box, in Docker Compose behind Caddy, which handles TLS
-> itself. Postgres with Alembic migrations. The static front end is on Vercel. Every push
-> runs the tests in CI. The deploy script rebuilds on the server, then polls the health
-> endpoint for the new commit hash — if it does not appear, it rolls itself back.
->
-> The API is a persistent process rather than a serverless function because one search
-> holds a stream open for two minutes of rate-limited crawling.
-
-### 1:34–1:55 — The honest part
-
-*Switch to the terminal with `evals/results.md`.*
-
-> The AI is deliberately small. It only reads a page when the regular expressions leave a
-> gap, and I measured whether that is worth anything against sixteen hand-labelled
-> homepages. Regex alone gets thirty-one of sixty-four fields right. Adding the model gets
-> forty-one — and almost all of that gain is one field the regexes cannot do at all.
->
-> The eval also caught that my extraction was running non-deterministically, and it caught
-> one of my own labels being wrong.
-
-### 1:55–2:05 — Close
-
-*Back to the app. Export to HubSpot CSV. Show the file opening.*
-
-> Export straight into HubSpot's import format, attribution included. Next I would add a
-> real job queue and a second discovery source. Thanks for watching.
+If a take runs long, cut paragraph 6 down to the first sentence. The architecture is in the
+README and the evaluator can read it; the thesis and the measurement are not recoverable
+from anywhere else in two minutes.
 
 ## Numbers used, and where they come from
 
 | Claim | Source |
 |---|---|
-| 92 s cold, 4 s warm | README, "Caching and performance"; measured on the deployed server |
+| Ninety seconds of crawling per search | README, "Caching and performance"; 92 s cold on the deployed server |
 | Five scoring factors, weights 25/20/20/20/15 | `api/app/pipeline/score.py` |
 | Same arithmetic both sides, one fixture | `api/tests/fixtures/golden_scores.json` |
 | 31/64 regex, 41/64 with the model | `evals/results.md` |
-| Almost all the gain is one field | `is_chain`, 1/16 → 8/16, same file |
+| Sixteen hand-labelled homepages | `evals/labels.json` |
+| The evaluation caught two things I had wrong | `evals/README.md`, "What the eval changed" |
 | Health-checked rollback | `deploy/deploy.sh` |
 
 ## What not to say
