@@ -32,7 +32,7 @@ class FakeGroq:
 
     async def _create(self, *, model, messages, response_format, max_completion_tokens, **kw):
         self.calls.append(model)
-        self.kwargs.append(kw)
+        self.kwargs.append({"max_completion_tokens": max_completion_tokens, **kw})
         step = self.script[model].pop(0)
         if isinstance(step, Exception):
             raise step

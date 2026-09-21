@@ -14,6 +14,11 @@ from app.schemas import LeadOut, lead_to_out
 router = APIRouter(prefix="/api/leads")
 
 
+def strip_control_chars(text: str) -> str:
+    """Drop C0 control characters and DEL, keeping tab and newline."""
+    return "".join(c for c in text if c in "\n\t" or (ord(c) >= 32 and ord(c) != 127))
+
+
 @router.get("/{lead_id}", response_model=LeadOut)
 def get_lead(lead_id: str, s: SessionDep) -> LeadOut:
     lead = s.get(Lead, lead_id)
@@ -56,9 +61,19 @@ async def opener(lead_id: str, s: SessionDep) -> dict:
         },
     }
     system, user = opener_messages(summary)
+    # 600, not 160. A three-line opener costs 74-90 completion tokens, but Groq's strict-JSON
+    # decoder force-closes the string as the generation nears its budget, so a starved call
+    # comes back as a *successful* two-line draft cut mid-sentence: finish_reason is "stop",
+    # not "length". Measured across five leads, 160 truncated every one and 600 truncated none.
     data, status = await deps.get_pool().complete_json(
-        schema_name="opener", schema=OPENER_SCHEMA, system=system, user=user, max_tokens=160
+        schema_name="opener", schema=OPENER_SCHEMA, system=system, user=user, max_tokens=600
     )
     if status != "ok" or not data or not data.get("opener"):
         raise llm_unavailable(status)
-    return {"opener": data["opener"].strip()}
+    raw = data["opener"]
+    cleaned = strip_control_chars(raw)
+    # A stray C0 control character is the one in-band marker that the decoder was cut off
+    # mid-string. Better a clean error than half a sentence the caller might read aloud.
+    if cleaned != raw or not cleaned.strip():
+        raise llm_unavailable("truncated")
+    return {"opener": cleaned.strip()}

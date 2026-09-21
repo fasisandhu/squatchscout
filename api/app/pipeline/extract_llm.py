@@ -59,7 +59,10 @@ async def extract_with_llm(
         schema=EXTRACTION_SCHEMA,
         system=system,
         user=user,
-        max_tokens=350,
+        # 800, not 350: one eval page (animal-hospital-signal-mtn) exhausted 350 and came
+        # back as a hard 400 json_validate_failed, which burns the model-pool fallback and
+        # drops the lead's enrichment entirely. Observed usage is 90-144 tokens.
+        max_tokens=800,
     )
     if status != "ok" or data is None:
         return None, status
